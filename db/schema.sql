@@ -18,26 +18,6 @@ CREATE TABLE IF NOT EXISTS recipes (
   UNIQUE(item_id, material_id)
 );
 
--- Trigger: Validate that recipe materials must be crafting materials
-CREATE TRIGGER IF NOT EXISTS validate_recipe_material
-BEFORE INSERT ON recipes
-BEGIN
-  SELECT CASE
-    WHEN (SELECT category FROM items WHERE id = NEW.material_id) != 'crafting material'
-    THEN RAISE(ABORT, 'Recipe materials must be crafting materials')
-  END;
-END;
-
--- Trigger: Validate on update as well
-CREATE TRIGGER IF NOT EXISTS validate_recipe_material_update
-BEFORE UPDATE ON recipes
-BEGIN
-  SELECT CASE
-    WHEN (SELECT category FROM items WHERE id = NEW.material_id) != 'crafting material'
-    THEN RAISE(ABORT, 'Recipe materials must be crafting materials')
-  END;
-END;
-
 -- Index for faster recipe lookups
 CREATE INDEX IF NOT EXISTS idx_recipes_item_id ON recipes(item_id);
 CREATE INDEX IF NOT EXISTS idx_recipes_material_id ON recipes(material_id);
