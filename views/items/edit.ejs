@@ -1,0 +1,96 @@
+<%- include('../partials/header') %>
+
+<div class="container">
+  <h1>Edit Item</h1>
+
+  <% if (error) { %>
+    <div class="error"><%= error %></div>
+  <% } %>
+
+  <form action="/items/<%= item.id %>" method="POST">
+    <div class="form-group">
+      <label for="name">Item Name</label>
+      <input type="text" id="name" name="name" value="<%= item.name %>" required>
+    </div>
+
+    <div class="form-group">
+      <label for="stack_size">Stack Size</label>
+      <input type="number" id="stack_size" name="stack_size" min="1" value="<%= item.stack_size %>" required>
+    </div>
+
+    <div class="form-group">
+      <label for="category">Category</label>
+      <select id="category" name="category" required>
+        <% categories.forEach(cat => { %>
+          <option value="<%= cat %>" <%= cat === item.category ? 'selected' : '' %>><%= cat %></option>
+        <% }) %>
+      </select>
+    </div>
+
+    <div class="recipe-section">
+      <h3>Crafting Recipe (optional)</h3>
+      <p class="help-text">Leave empty if this is a base item that cannot be crafted.</p>
+
+      <div id="materials-container">
+        <!-- Material rows will be added here -->
+      </div>
+
+      <button type="button" id="add-material" class="btn btn-secondary">+ Add Material</button>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Save Changes</button>
+      <a href="/items/<%= item.id %>" class="btn">Cancel</a>
+    </div>
+  </form>
+</div>
+
+<script>
+  const craftingMaterials = <%- JSON.stringify(craftingMaterials) %>;
+  const existingRecipe = <%- JSON.stringify(recipe) %>;
+  const container = document.getElementById('materials-container');
+
+  function createMaterialRow(materialId, quantity) {
+    materialId = materialId || '';
+    quantity = quantity || 1;
+    const row = document.createElement('div');
+    row.className = 'material-row';
+
+    const select = document.createElement('select');
+    select.name = 'material_ids';
+    select.required = true;
+    select.innerHTML = '<option value="">Select material</option>' +
+      craftingMaterials.map(m =>
+        '<option value="' + m.id + '"' + (m.id == materialId ? ' selected' : '') + '>' + m.name + '</option>'
+      ).join('');
+
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.name = 'quantities';
+    input.min = 1;
+    input.value = quantity;
+    input.required = true;
+
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.className = 'btn btn-danger';
+    removeBtn.textContent = 'Remove';
+    removeBtn.addEventListener('click', function() { row.remove(); });
+
+    row.appendChild(select);
+    row.appendChild(input);
+    row.appendChild(removeBtn);
+    container.appendChild(row);
+  }
+
+  document.getElementById('add-material').addEventListener('click', function() {
+    createMaterialRow();
+  });
+
+  // Load existing recipe
+  existingRecipe.forEach(function(r) {
+    createMaterialRow(r.material_id, r.quantity);
+  });
+</script>
+
+<%- include('../partials/footer') %>

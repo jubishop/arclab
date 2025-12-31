@@ -1,0 +1,46 @@
+<%- include('../partials/header') %>
+
+<div class="container">
+  <div class="item-header">
+    <h1><%= item.name %></h1>
+    <div class="actions">
+      <a href="/items/<%= item.id %>/edit" class="btn">Edit</a>
+      <form action="/items/<%= item.id %>/delete" method="POST" style="display:inline" onsubmit="return confirm('Delete this item?')">
+        <button type="submit" class="btn btn-danger">Delete</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="item-details">
+    <p><strong>Category:</strong> <span class="category-badge <%= item.category.replace(/ /g, '-') %>"><%= item.category %></span></p>
+    <p><strong>Stack Size:</strong> <%= item.stack_size %></p>
+  </div>
+
+  <% if (recipe.length > 0) { %>
+    <div class="recipe-section">
+      <h2>Crafting Recipe</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Material</th>
+            <th>Quantity</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% recipe.forEach(r => { %>
+            <tr>
+              <td><a href="/items/<%= r.material_id %>"><%= r.material_name %></a></td>
+              <td><%= r.quantity %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } else { %>
+    <p class="base-item">This is a base item (not craftable).</p>
+  <% } %>
+
+  <p><a href="/items">&larr; Back to all items</a></p>
+</div>
+
+<%- include('../partials/footer') %>

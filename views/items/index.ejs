@@ -1,0 +1,32 @@
+<%- include('../partials/header') %>
+
+<div class="container">
+  <h1>Items</h1>
+
+  <% if (items.length === 0) { %>
+    <p class="empty-state">No items yet. <a href="/items/new">Add your first item</a>.</p>
+  <% } else { %>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Category</th>
+          <th>Stack Size</th>
+          <th>Craftable</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% items.forEach(item => { %>
+          <tr>
+            <td><a href="/items/<%= item.id %>"><%= item.name %></a></td>
+            <td><span class="category-badge <%= item.category.replace(/ /g, '-') %>"><%= item.category %></span></td>
+            <td><%= item.stack_size %></td>
+            <td><%= item.is_craftable ? 'Yes' : 'No' %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+</div>
+
+<%- include('../partials/footer') %>

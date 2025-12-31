@@ -1,0 +1,263 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #1a1a2e;
+  color: #eee;
+  line-height: 1.6;
+}
+
+a {
+  color: #4fc3f7;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+header {
+  background: #16213e;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid #0f3460;
+}
+
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #e94560;
+}
+
+.logo:hover {
+  text-decoration: none;
+}
+
+main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.container {
+  background: #16213e;
+  padding: 2rem;
+  border-radius: 8px;
+}
+
+h1 {
+  margin-bottom: 1.5rem;
+  color: #fff;
+}
+
+h2 {
+  margin: 1.5rem 0 1rem;
+  color: #fff;
+}
+
+h3 {
+  margin: 1rem 0 0.5rem;
+  color: #ccc;
+}
+
+/* Buttons */
+.btn {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: #0f3460;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.btn:hover {
+  background: #1a4a7a;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: #e94560;
+}
+
+.btn-primary:hover {
+  background: #ff6b8a;
+}
+
+.btn-secondary {
+  background: #4a5568;
+}
+
+.btn-secondary:hover {
+  background: #5a6578;
+}
+
+.btn-danger {
+  background: #c53030;
+}
+
+.btn-danger:hover {
+  background: #e53e3e;
+}
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+th, td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #0f3460;
+}
+
+th {
+  background: #0f3460;
+  color: #fff;
+}
+
+tr:hover {
+  background: #1a3a5e;
+}
+
+/* Category badges */
+.category-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.gun { background: #744210; }
+.gun-mod { background: #5a4a10; }
+.augment { background: #285e61; }
+.quick-use { background: #5c2d91; }
+.crafting-material { background: #2b5329; }
+.ammunition { background: #7b341e; }
+.shield { background: #2c5282; }
+
+/* Forms */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #ccc;
+}
+
+input[type="text"],
+input[type="number"],
+select {
+  width: 100%;
+  padding: 0.5rem;
+  background: #1a1a2e;
+  border: 1px solid #0f3460;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 1rem;
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  border-color: #4fc3f7;
+}
+
+.form-actions {
+  margin-top: 2rem;
+  display: flex;
+  gap: 1rem;
+}
+
+/* Recipe section */
+.recipe-section {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #0f3460;
+}
+
+.help-text {
+  color: #888;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.material-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  align-items: center;
+}
+
+.material-row select {
+  flex: 2;
+}
+
+.material-row input[type="number"] {
+  flex: 1;
+  max-width: 100px;
+}
+
+.material-row .btn {
+  flex-shrink: 0;
+}
+
+#add-material {
+  margin-top: 0.5rem;
+}
+
+/* Item details */
+.item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.item-details p {
+  margin-bottom: 0.5rem;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.base-item {
+  color: #888;
+  font-style: italic;
+  margin: 1rem 0;
+}
+
+/* Error messages */
+.error {
+  background: #c53030;
+  color: #fff;
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+/* Empty state */
+.empty-state {
+  color: #888;
+  text-align: center;
+  padding: 2rem;
+}
