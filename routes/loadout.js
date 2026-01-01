@@ -25,7 +25,7 @@ function calculateOptimalInventory(desiredItems) {
 
     if (!recipe || recipe.length === 0) {
       // Not craftable, just hold the item itself
-      addToInventory(inventory, item, quantity, 'base item');
+      addToInventory(inventory, item, quantity, `${quantity}x base item`);
       continue;
     }
 
@@ -37,13 +37,13 @@ function calculateOptimalInventory(desiredItems) {
 
     if (slotsPerCraftedItem <= slotsForMaterials) {
       // Crafted item is more efficient (or equal), hold the item
-      addToInventory(inventory, item, quantity, 'craft ahead');
+      addToInventory(inventory, item, quantity, `${quantity}x craft ahead`);
     } else {
       // Materials are more efficient, hold the materials
       for (const r of recipe) {
         const material = db.getItemById(r.material_id);
         const materialQty = r.quantity * quantity;
-        addToInventory(inventory, material, materialQty, `for ${item.name}`);
+        addToInventory(inventory, material, materialQty, `${materialQty} for ${quantity}x ${item.name}`);
       }
     }
   }
