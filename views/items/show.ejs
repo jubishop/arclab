@@ -24,6 +24,7 @@
           <tr>
             <th>Material</th>
             <th>Quantity</th>
+            <th>Stack Size</th>
           </tr>
         </thead>
         <tbody>
@@ -31,11 +32,25 @@
             <tr>
               <td><a href="/items/<%= r.material_id %>"><%= r.material_name %></a></td>
               <td><%= r.quantity %></td>
+              <td><%= r.material_stack_size %></td>
             </tr>
           <% }) %>
         </tbody>
       </table>
     </div>
+
+    <% if (inventoryAnalysis) { %>
+      <div class="inventory-analysis">
+        <h2>Inventory Efficiency</h2>
+        <div class="analysis-result <%= inventoryAnalysis.recommendation %>">
+          <p class="recommendation"><%= inventoryAnalysis.message %></p>
+          <div class="analysis-details">
+            <p><strong>Slots per crafted item:</strong> <%= inventoryAnalysis.slotsPerItem %></p>
+            <p><strong>Slots for materials (per craft):</strong> <%= inventoryAnalysis.slotsForMaterials %></p>
+          </div>
+        </div>
+      </div>
+    <% } %>
   <% } else { %>
     <p class="base-item">This is a base item (not craftable).</p>
   <% } %>

@@ -46,7 +46,7 @@ function getItemById(id) {
 // Get recipe for an item (list of materials)
 function getRecipeByItemId(itemId) {
   return db.prepare(`
-    SELECT r.*, m.name AS material_name, m.category AS material_category
+    SELECT r.*, m.name AS material_name, m.category AS material_category, m.stack_size AS material_stack_size
     FROM recipes r
     JOIN items m ON r.material_id = m.id
     WHERE r.item_id = ?

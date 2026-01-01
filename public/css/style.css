@@ -261,3 +261,46 @@ select:focus {
   text-align: center;
   padding: 2rem;
 }
+
+/* Inventory Analysis */
+.inventory-analysis {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #0f3460;
+}
+
+.analysis-result {
+  padding: 1rem;
+  border-radius: 8px;
+  margin-top: 0.5rem;
+}
+
+.analysis-result.craft {
+  background: linear-gradient(135deg, #1a4a2e 0%, #0f3460 100%);
+  border-left: 4px solid #48bb78;
+}
+
+.analysis-result.materials {
+  background: linear-gradient(135deg, #4a3a1a 0%, #0f3460 100%);
+  border-left: 4px solid #ecc94b;
+}
+
+.analysis-result.equal {
+  background: linear-gradient(135deg, #2d3748 0%, #0f3460 100%);
+  border-left: 4px solid #a0aec0;
+}
+
+.analysis-result .recommendation {
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+}
+
+.analysis-details {
+  font-size: 0.9rem;
+  color: #a0aec0;
+}
+
+.analysis-details p {
+  margin-bottom: 0.25rem;
+}
