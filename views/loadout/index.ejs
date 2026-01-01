@@ -1,0 +1,120 @@
+<%- include('../partials/header') %>
+
+<div class="container">
+  <h1>Loadout Planner</h1>
+  <p class="help-text">Select items you want to use and how many. The system will calculate the most efficient way to carry them.</p>
+
+  <form action="/loadout" method="POST">
+    <div class="loadout-items" id="items-container">
+      <% if (selectedItems && selectedItems.length > 0) { %>
+        <% selectedItems.forEach((s, index) => { %>
+          <div class="loadout-row">
+            <select name="item_ids" required>
+              <option value="">Select item</option>
+              <% allItems.forEach(item => { %>
+                <option value="<%= item.id %>" <%= s.item && s.item.id === item.id ? 'selected' : '' %>><%= item.name %> (<%= item.category %>)</option>
+              <% }) %>
+            </select>
+            <input type="number" name="quantities" min="1" value="<%= s.quantity %>" required placeholder="Qty">
+            <button type="button" class="btn btn-danger remove-row">Remove</button>
+          </div>
+        <% }) %>
+      <% } %>
+    </div>
+
+    <button type="button" id="add-item" class="btn btn-secondary">+ Add Item</button>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Calculate Optimal Inventory</button>
+    </div>
+  </form>
+
+  <% if (results && results.length > 0) { %>
+    <div class="results-section">
+      <h2>Recommended Inventory</h2>
+      <p class="summary">Total inventory slots needed: <strong><%= totalSlots %></strong></p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Category</th>
+            <th>Needed</th>
+            <th>Carry (rounded to stack)</th>
+            <th>Stacks</th>
+            <th>Reason</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% results.forEach(r => { %>
+            <tr>
+              <td><a href="/items/<%= r.item.id %>"><%= r.item.name %></a></td>
+              <td><span class="category-badge <%= r.item.category.replace(/ /g, '-') %>"><%= r.item.category %></span></td>
+              <td><%= r.rawQuantity %></td>
+              <td><%= r.roundedQuantity %></td>
+              <td><%= r.stacks %></td>
+              <td><%= r.reasons.join(', ') %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } else if (results) { %>
+    <div class="results-section">
+      <p>No items selected or all quantities are zero.</p>
+    </div>
+  <% } %>
+
+  <p><a href="/items">&larr; Back to all items</a></p>
+</div>
+
+<script>
+  const allItems = <%- JSON.stringify(allItems) %>;
+  const container = document.getElementById('items-container');
+
+  function createItemRow() {
+    const row = document.createElement('div');
+    row.className = 'loadout-row';
+
+    const select = document.createElement('select');
+    select.name = 'item_ids';
+    select.required = true;
+    select.innerHTML = '<option value="">Select item</option>' +
+      allItems.map(item =>
+        '<option value="' + item.id + '">' + item.name + ' (' + item.category + ')</option>'
+      ).join('');
+
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.name = 'quantities';
+    input.min = 1;
+    input.value = 1;
+    input.required = true;
+    input.placeholder = 'Qty';
+
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.className = 'btn btn-danger remove-row';
+    removeBtn.textContent = 'Remove';
+
+    row.appendChild(select);
+    row.appendChild(input);
+    row.appendChild(removeBtn);
+    container.appendChild(row);
+  }
+
+  document.getElementById('add-item').addEventListener('click', createItemRow);
+
+  container.addEventListener('click', function(e) {
+    if (e.target.classList.contains('remove-row')) {
+      e.target.parentElement.remove();
+    }
+  });
+
+  // Add first row if empty
+  if (container.children.length === 0) {
+    createItemRow();
+  }
+</script>
+
+<%- include('../partials/footer') %>

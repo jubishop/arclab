@@ -304,3 +304,47 @@ select:focus {
 .analysis-details p {
   margin-bottom: 0.25rem;
 }
+
+/* Loadout Planner */
+.loadout-items {
+  margin-bottom: 1rem;
+}
+
+.loadout-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  align-items: center;
+}
+
+.loadout-row select {
+  flex: 3;
+}
+
+.loadout-row input[type="number"] {
+  flex: 1;
+  max-width: 100px;
+}
+
+.loadout-row .btn {
+  flex-shrink: 0;
+}
+
+.results-section {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #0f3460;
+}
+
+.results-section .summary {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  color: #4fc3f7;
+}
+
+/* Used In section */
+.used-in-section {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #0f3460;
+}

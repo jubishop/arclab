@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const db = require('./db/database');
 const itemsRouter = require('./routes/items');
+const loadoutRouter = require('./routes/loadout');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -20,6 +21,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/items', itemsRouter);
+app.use('/loadout', loadoutRouter);
 
 // Initialize database and start server
 db.init();
