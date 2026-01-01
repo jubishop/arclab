@@ -13,17 +13,24 @@
       <input type="text" id="name" name="name" required>
     </div>
 
+    <%
+    const categoryIcons = {
+      'gun': '🔫',
+      'gun mod': '🔧',
+      'augment': '⚡',
+      'quick use': '💊',
+      'crafting material': '🧱',
+      'ammunition': '🎯',
+      'shield': '🛡️'
+    };
+    %>
     <div class="form-group">
       <label for="category">Category</label>
       <select id="category" name="category" required>
         <option value="">Select a category</option>
-        <option value="gun">🔫 gun</option>
-        <option value="gun mod">🔧 gun mod</option>
-        <option value="augment">⚡ augment</option>
-        <option value="quick use">💊 quick use</option>
-        <option value="crafting material">🧱 crafting material</option>
-        <option value="ammunition">🎯 ammunition</option>
-        <option value="shield">🛡️ shield</option>
+        <% categories.forEach(cat => { %>
+          <option value="<%= cat.id %>"><%= categoryIcons[cat.name] %> <%= cat.name %></option>
+        <% }) %>
       </select>
     </div>
 
@@ -57,11 +64,12 @@
   const stackSizeGroup = document.getElementById('stack-size-group');
   const stackSizeInput = document.getElementById('stack_size');
 
-  const fixedStackCategories = ['gun', 'gun mod', 'augment', 'shield'];
+  // Category IDs that have fixed stack size of 1
+  const fixedStackCategoryIds = [1, 2, 3, 7]; // gun, gun mod, augment, shield
 
   function updateStackSizeVisibility() {
-    const category = categorySelect.value;
-    if (fixedStackCategories.includes(category)) {
+    const categoryId = parseInt(categorySelect.value);
+    if (fixedStackCategoryIds.includes(categoryId)) {
       stackSizeGroup.style.display = 'none';
       stackSizeInput.value = 1;
     } else {

@@ -1,14 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../db/database');
+const { Category } = db;
 
 // Get all craftable items for the planner
 function getCraftableItems() {
   return db.db.prepare(`
-    SELECT DISTINCT i.*
+    SELECT DISTINCT i.*, c.name AS category
     FROM items i
+    JOIN categories c ON i.category_id = c.id
     WHERE EXISTS (SELECT 1 FROM recipes WHERE item_id = i.id)
-    ORDER BY i.category, i.name
+    ORDER BY c.name, i.name
   `).all();
 }
 
@@ -86,24 +88,32 @@ function addToInventory(inventory, item, quantity, reason) {
   }
 }
 
-// Show planner page
+// Show planner page (load saved stash)
 router.get('/', (req, res) => {
   const craftableItems = getCraftableItems();
-  const allItems = db.getAllItems();
-  res.render('inventory/index', {
+  const allItems = db.getAllItems().filter(i => i.category_id !== Category.CRAFTING_MATERIAL);
+
+  // Load saved stash configuration
+  const savedStash = db.getStash();
+  const selectedItems = savedStash.map(s => {
+    const item = db.getItemById(s.item_id);
+    return { item, quantity: s.quantity };
+  });
+
+  res.render('stash/index', {
     craftableItems,
     allItems,
     results: null,
-    selectedItems: []
+    selectedItems
   });
 });
 
-// Calculate loadout
+// Calculate stash and save configuration
 router.post('/', (req, res) => {
   const { item_ids, quantities } = req.body;
 
   const craftableItems = getCraftableItems();
-  const allItems = db.getAllItems();
+  const allItems = db.getAllItems().filter(i => i.category_id !== Category.CRAFTING_MATERIAL);
 
   // Parse input
   const itemIdsArr = item_ids ? (Array.isArray(item_ids) ? item_ids : [item_ids]) : [];
@@ -113,6 +123,9 @@ router.post('/', (req, res) => {
     itemId: parseInt(id),
     quantity: parseInt(quantitiesArr[i]) || 0
   })).filter(d => d.itemId && d.quantity > 0);
+
+  // Save the stash configuration
+  db.saveStash(desiredItems);
 
   // Track selected items for re-rendering
   const selectedItems = desiredItems.map(d => {
@@ -125,7 +138,7 @@ router.post('/', (req, res) => {
   // Calculate total slots
   const totalSlots = results.reduce((sum, r) => sum + r.stacks, 0);
 
-  res.render('inventory/index', {
+  res.render('stash/index', {
     craftableItems,
     allItems,
     results,

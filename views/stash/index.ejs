@@ -1,10 +1,10 @@
 <%- include('../partials/header') %>
 
 <div class="container">
-  <h1>Inventory Planner</h1>
-  <p class="help-text">Select items you want to use and how many. The system will calculate the most efficient way to carry them.</p>
+  <h1>Stash Planner</h1>
+  <p class="help-text">Select items you want to use and how many. The system will calculate the most efficient way to carry them. Your stash is saved automatically.</p>
 
-  <form action="/inventory" method="POST">
+  <form action="/stash" method="POST">
     <div class="loadout-items" id="items-container">
       <% if (selectedItems && selectedItems.length > 0) { %>
         <% selectedItems.forEach((s, index) => { %>
@@ -25,14 +25,14 @@
     <button type="button" id="add-item" class="btn btn-secondary">+ Add Item</button>
 
     <div class="form-actions">
-      <button type="submit" class="btn btn-primary">Calculate Optimal Inventory</button>
+      <button type="submit" class="btn btn-primary">Calculate Optimal Stash</button>
     </div>
   </form>
 
   <% if (results && results.length > 0) { %>
     <div class="results-section">
-      <h2>Recommended Inventory</h2>
-      <p class="summary">Total inventory slots needed: <strong><%= totalSlots %></strong></p>
+      <h2>Recommended Stash</h2>
+      <p class="summary">Total stash slots needed: <strong><%= totalSlots %></strong></p>
 
       <table>
         <thead>

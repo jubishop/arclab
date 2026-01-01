@@ -29,7 +29,7 @@ const categoryIcons = {
       <label for="category">Category</label>
       <select id="category" name="category" required>
         <% categories.forEach(cat => { %>
-          <option value="<%= cat %>" <%= cat === item.category ? 'selected' : '' %>><%= categoryIcons[cat] %> <%= cat %></option>
+          <option value="<%= cat.id %>" <%= cat.id === item.category_id ? 'selected' : '' %>><%= categoryIcons[cat.name] %> <%= cat.name %></option>
         <% }) %>
       </select>
     </div>
@@ -65,11 +65,12 @@ const categoryIcons = {
   const stackSizeGroup = document.getElementById('stack-size-group');
   const stackSizeInput = document.getElementById('stack_size');
 
-  const fixedStackCategories = ['gun', 'gun mod', 'augment', 'shield'];
+  // Category IDs that have fixed stack size of 1
+  const fixedStackCategoryIds = [1, 2, 3, 7]; // gun, gun mod, augment, shield
 
   function updateStackSizeVisibility() {
-    const category = categorySelect.value;
-    if (fixedStackCategories.includes(category)) {
+    const categoryId = parseInt(categorySelect.value);
+    if (fixedStackCategoryIds.includes(categoryId)) {
       stackSizeGroup.style.display = 'none';
       stackSizeInput.value = 1;
     } else {

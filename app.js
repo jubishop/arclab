@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 const db = require('./db/database');
 const itemsRouter = require('./routes/items');
-const inventoryRouter = require('./routes/inventory');
+const stashRouter = require('./routes/stash');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -21,7 +21,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/items', itemsRouter);
-app.use('/inventory', inventoryRouter);
+app.use('/stash', stashRouter);
 
 // Initialize database and start server
 db.init();

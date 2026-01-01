@@ -33,7 +33,8 @@ router.post('/', (req, res) => {
     });
   }
 
-  if (!db.CATEGORIES.includes(category)) {
+  const categoryId = parseInt(category);
+  if (!db.CATEGORIES.some(c => c.id === categoryId)) {
     const craftingMaterials = db.getCraftingMaterials();
     return res.render('items/new', {
       categories: db.CATEGORIES,
@@ -43,7 +44,7 @@ router.post('/', (req, res) => {
   }
 
   try {
-    const itemId = db.createItem(name.trim(), parseInt(stack_size), category);
+    const itemId = db.createItem(name.trim(), parseInt(stack_size), categoryId);
 
     // Save recipe if materials provided
     if (material_ids && quantities) {
@@ -124,8 +125,9 @@ router.post('/:id', (req, res) => {
     });
   }
 
+  const categoryId = parseInt(category);
   try {
-    db.updateItem(itemId, name.trim(), parseInt(stack_size), category);
+    db.updateItem(itemId, name.trim(), parseInt(stack_size), categoryId);
 
     // Update recipe
     const materialIdsArr = material_ids ? (Array.isArray(material_ids) ? material_ids : [material_ids]) : [];
