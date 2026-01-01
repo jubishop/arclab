@@ -90,7 +90,7 @@ function addToInventory(inventory, item, quantity, reason) {
 router.get('/', (req, res) => {
   const craftableItems = getCraftableItems();
   const allItems = db.getAllItems();
-  res.render('loadout/index', {
+  res.render('inventory/index', {
     craftableItems,
     allItems,
     results: null,
@@ -125,7 +125,7 @@ router.post('/', (req, res) => {
   // Calculate total slots
   const totalSlots = results.reduce((sum, r) => sum + r.stacks, 0);
 
-  res.render('loadout/index', {
+  res.render('inventory/index', {
     craftableItems,
     allItems,
     results,

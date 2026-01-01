@@ -1,10 +1,10 @@
 <%- include('../partials/header') %>
 
 <div class="container">
-  <h1>Loadout Planner</h1>
+  <h1>Inventory Planner</h1>
   <p class="help-text">Select items you want to use and how many. The system will calculate the most efficient way to carry them.</p>
 
-  <form action="/loadout" method="POST">
+  <form action="/inventory" method="POST">
     <div class="loadout-items" id="items-container">
       <% if (selectedItems && selectedItems.length > 0) { %>
         <% selectedItems.forEach((s, index) => { %>
