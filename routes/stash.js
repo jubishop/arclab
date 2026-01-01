@@ -94,7 +94,8 @@ function addToInventory(inventory, item, quantity, reason) {
 // Show planner page (load saved stash and auto-calculate)
 router.get('/', (req, res) => {
   const craftableItems = getCraftableItems();
-  const allItems = db.getAllItems().filter(i => i.category_id !== Category.CRAFTING_MATERIAL);
+  const excludedCategories = [Category.CRAFTING_MATERIAL, Category.GUN, Category.GUN_MOD, Category.AMMUNITION];
+  const allItems = db.getAllItems().filter(i => !excludedCategories.includes(i.category_id));
 
   // Load saved stash configuration (stored as stacks)
   const savedStash = db.getStash();
@@ -129,7 +130,8 @@ router.post('/', (req, res) => {
   const { item_ids, quantities } = req.body;
 
   const craftableItems = getCraftableItems();
-  const allItems = db.getAllItems().filter(i => i.category_id !== Category.CRAFTING_MATERIAL);
+  const excludedCategories = [Category.CRAFTING_MATERIAL, Category.GUN, Category.GUN_MOD, Category.AMMUNITION];
+  const allItems = db.getAllItems().filter(i => !excludedCategories.includes(i.category_id));
 
   // Parse input (quantities represent stacks)
   const itemIdsArr = item_ids ? (Array.isArray(item_ids) ? item_ids : [item_ids]) : [];
