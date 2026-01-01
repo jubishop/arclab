@@ -2,7 +2,7 @@
 
 <div class="container">
   <h1>Stash Planner</h1>
-  <p class="help-text">Select items you want to use and how many. The system will calculate the most efficient way to carry them. Your stash is saved automatically.</p>
+  <p class="help-text">Select items and how many stacks you want. The system will calculate the most efficient way to carry them. Your stash is saved automatically.</p>
 
   <form action="/stash" method="POST">
     <div class="loadout-items" id="items-container">
@@ -15,7 +15,7 @@
                 <option value="<%= item.id %>" <%= s.item && s.item.id === item.id ? 'selected' : '' %>><%= item.name %> (<%= item.category %>)</option>
               <% }) %>
             </select>
-            <input type="number" name="quantities" min="1" value="<%= s.quantity %>" required placeholder="Qty">
+            <input type="number" name="quantities" min="1" value="<%= s.stacks %>" required placeholder="Stacks">
             <button type="button" class="btn btn-danger remove-row">Remove</button>
           </div>
         <% }) %>
@@ -90,7 +90,7 @@
     input.min = 1;
     input.value = 1;
     input.required = true;
-    input.placeholder = 'Qty';
+    input.placeholder = 'Stacks';
 
     const removeBtn = document.createElement('button');
     removeBtn.type = 'button';
