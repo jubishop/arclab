@@ -6,7 +6,10 @@
   <% if (items.length === 0) { %>
     <p class="empty-state">No items yet. <a href="/items/new">Add your first item</a>.</p>
   <% } else { %>
-    <table>
+    <div class="filter-container">
+      <input type="text" id="item-filter" placeholder="Filter items..." autofocus>
+    </div>
+    <table id="items-table">
       <thead>
         <tr>
           <th>Name</th>
@@ -26,6 +29,43 @@
         <% }) %>
       </tbody>
     </table>
+    <p id="no-results" class="empty-state" style="display: none;">No items match your filter.</p>
+
+    <script>
+      const filterInput = document.getElementById('item-filter');
+      const table = document.getElementById('items-table');
+      const rows = table.querySelectorAll('tbody tr');
+      const noResults = document.getElementById('no-results');
+      let visibleRows = [];
+
+      function matchesFilter(text, terms) {
+        return terms.every(term => text.includes(term));
+      }
+
+      function applyFilter() {
+        const terms = filterInput.value.toLowerCase().split(/\s+/).filter(t => t);
+        visibleRows = [];
+
+        rows.forEach(row => {
+          const name = row.cells[0].textContent.toLowerCase();
+          const matches = terms.length === 0 || matchesFilter(name, terms);
+          row.style.display = matches ? '' : 'none';
+          if (matches) visibleRows.push(row);
+        });
+
+        noResults.style.display = visibleRows.length === 0 ? '' : 'none';
+        table.style.display = visibleRows.length === 0 ? 'none' : '';
+      }
+
+      filterInput.addEventListener('input', applyFilter);
+
+      filterInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && visibleRows.length === 1) {
+          const link = visibleRows[0].querySelector('a');
+          if (link) window.location.href = link.href;
+        }
+      });
+    </script>
   <% } %>
 </div>
 

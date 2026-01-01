@@ -348,3 +348,15 @@ select:focus {
   padding-top: 1rem;
   border-top: 1px solid #0f3460;
 }
+
+/* Filter input */
+.filter-container {
+  margin-bottom: 1rem;
+}
+
+#item-filter {
+  width: 100%;
+  max-width: 400px;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+}
