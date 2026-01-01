@@ -91,7 +91,7 @@ function addToInventory(inventory, item, quantity, reason) {
   }
 }
 
-// Show planner page (load saved stash)
+// Show planner page (load saved stash and auto-calculate)
 router.get('/', (req, res) => {
   const craftableItems = getCraftableItems();
   const allItems = db.getAllItems().filter(i => i.category_id !== Category.CRAFTING_MATERIAL);
@@ -103,11 +103,24 @@ router.get('/', (req, res) => {
     return { item, stacks: s.quantity };
   });
 
+  // Auto-calculate if there are saved items
+  let results = null;
+  let totalSlots = 0;
+  if (savedStash.length > 0) {
+    const desiredItems = savedStash.map(s => ({
+      itemId: s.item_id,
+      stacks: s.quantity
+    }));
+    results = calculateOptimalInventory(desiredItems);
+    totalSlots = results.reduce((sum, r) => sum + r.stacks, 0);
+  }
+
   res.render('stash/index', {
     craftableItems,
     allItems,
-    results: null,
-    selectedItems
+    results,
+    selectedItems,
+    totalSlots
   });
 });
 

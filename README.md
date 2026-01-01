@@ -6,6 +6,7 @@ A Node.js/Express web application for tracking items and crafting recipes from t
 
 - Track all game items with categories, stack sizes, and crafting recipes
 - View complete crafting chains (what materials are needed, recursively)
+- **Stash Planner** - Calculate optimal inventory for carrying items vs raw materials
 - CRUD operations for items and recipes
 - SQLite database for persistence
 
@@ -53,11 +54,15 @@ arclab/
 │   ├── database.js        # Database connection & queries
 │   ├── schema.sql         # Table definitions
 │   └── arclab.db          # SQLite database
+├── lib/
+│   └── inventory.js       # Inventory efficiency calculations
 ├── routes/
-│   └── items.js           # Item CRUD routes
+│   ├── items.js           # Item CRUD routes
+│   └── stash.js           # Stash planner routes
 ├── views/
 │   ├── partials/          # Header/footer
-│   └── items/             # Item views (index, new, show, edit)
+│   ├── items/             # Item views (index, new, show, edit)
+│   └── stash/             # Stash planner view
 └── public/
     └── css/
         └── style.css
@@ -74,6 +79,8 @@ arclab/
 | GET | /items/:id/edit | Edit item form |
 | POST | /items/:id | Update item |
 | POST | /items/:id/delete | Delete item |
+| GET | /stash | Stash planner (auto-calculates saved stash) |
+| POST | /stash | Calculate and save optimal stash |
 
 ## Data Source
 

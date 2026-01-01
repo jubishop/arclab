@@ -10,13 +10,16 @@ This is an ARC Raiders item tracking web application built with Node.js, Express
 - `db/database.js` - Database queries and connection
 - `db/schema.sql` - SQLite schema
 - `routes/items.js` - CRUD routes for items
+- `routes/stash.js` - Stash planner routes and optimization logic
 - `lib/inventory.js` - Inventory efficiency analysis utilities
 
 ## Database Schema
 
-Two tables:
-- `items` - id, name, stack_size, category, created_at
+Four tables:
+- `categories` - id, name (relational category lookup)
+- `items` - id, name, stack_size, category_id (FK), created_at
 - `recipes` - id, item_id, material_id, quantity
+- `stash_items` - id, item_id, quantity (saved stash configuration)
 
 Categories: gun, gun mod, augment, quick use, crafting material, ammunition, shield
 
@@ -25,7 +28,8 @@ Categories: gun, gun mod, augment, quick use, crafting material, ammunition, shi
 ### Adding items via code
 ```javascript
 const db = require('./db/database');
-db.createItem('Item Name', stackSize, 'category');
+const { Category } = db;
+db.createItem('Item Name', stackSize, Category.GUN);
 ```
 
 ### Adding recipes
