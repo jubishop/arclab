@@ -78,9 +78,10 @@ router.get('/:id', (req, res) => {
     return res.status(404).send('Item not found');
   }
   const recipe = db.getRecipeByItemId(item.id);
+  const usedIn = db.getItemsUsingMaterial(item.id);
   const inventoryAnalysis = calculateInventoryEfficiency(item, recipe);
 
-  res.render('items/show', { item, recipe, inventoryAnalysis });
+  res.render('items/show', { item, recipe, usedIn, inventoryAnalysis });
 });
 
 // Edit item form

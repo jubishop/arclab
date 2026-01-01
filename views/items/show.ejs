@@ -16,6 +16,30 @@
     <p><strong>Stack Size:</strong> <%= item.stack_size %></p>
   </div>
 
+  <% if (usedIn && usedIn.length > 0) { %>
+    <div class="used-in-section">
+      <h2>Used In</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Category</th>
+            <th>Quantity Needed</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% usedIn.forEach(u => { %>
+            <tr>
+              <td><a href="/items/<%= u.id %>"><%= u.name %></a></td>
+              <td><span class="category-badge <%= u.category.replace(/ /g, '-') %>"><%= u.category %></span></td>
+              <td><%= u.quantity %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } %>
+
   <% if (recipe.length > 0) { %>
     <div class="recipe-section">
       <h2>Crafting Recipe</h2>

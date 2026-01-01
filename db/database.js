@@ -102,6 +102,17 @@ function addRecipeEntry(itemId, materialId, quantity) {
   return stmt.run(itemId, materialId, quantity);
 }
 
+// Get items that use this material in their recipes
+function getItemsUsingMaterial(materialId) {
+  return db.prepare(`
+    SELECT i.id, i.name, i.category, i.stack_size, r.quantity
+    FROM recipes r
+    JOIN items i ON r.item_id = i.id
+    WHERE r.material_id = ?
+    ORDER BY i.category, i.name
+  `).all(materialId);
+}
+
 // Save full recipe (delete existing and insert new)
 function saveRecipe(itemId, materials) {
   const deleteStmt = db.prepare('DELETE FROM recipes WHERE item_id = ?');
@@ -129,6 +140,7 @@ module.exports = {
   getAllItems,
   getItemById,
   getRecipeByItemId,
+  getItemsUsingMaterial,
   getCraftingMaterials,
   createItem,
   updateItem,
