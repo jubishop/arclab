@@ -15,21 +15,43 @@ This is an ARC Raiders item tracking web application built with Node.js, Express
 
 ## Database Schema
 
-Four tables:
-- `categories` - id, name (relational category lookup)
-- `items` - id, name, stack_size, category_id (FK), created_at
+Three tables:
+- `items` - id, name, stack_size, category_id, rarity_id, image_path, created_at
 - `recipes` - id, item_id, material_id, quantity
 - `stash_items` - id, item_id, quantity (saved stash configuration)
 
-Categories: gun, gun mod, augment, quick use, crafting material, ammunition, shield
+Categories and rarities are stored as integer enums (no FK tables):
+
+**Categories (category_id):**
+1. Basic Material
+2. Topside Material
+3. Advanced Material
+4. Refined Material
+5. Quick Use
+6. Key
+7. Augment
+8. Ammunition
+9. Shield
+10. Weapon
+11. Modification
+12. Trinket
+13. Misc
+
+**Rarities (rarity_id):**
+1. Common
+2. Uncommon
+3. Rare
+4. Epic
+5. Legendary
 
 ## Common Tasks
 
 ### Adding items via code
 ```javascript
 const db = require('./db/database');
-const { Category } = db;
-db.createItem('Item Name', stackSize, Category.GUN);
+const { Category, Rarity } = db;
+db.createItem('Item Name', stackSize, Category.WEAPON);
+// Use db.updateItemCategoryAndRarity(id, categoryId, rarityId) to set rarity
 ```
 
 ### Adding recipes
@@ -88,3 +110,12 @@ const analysis = calculateInventoryEfficiency(item, recipe);
 ## Data Source
 
 Item data from https://arcraiders.wiki/
+
+### Scraping scripts
+- `scripts/scrape-images.js` - Downloads item images from the wiki
+- `scripts/scrape-metadata.js` - Scrapes category and rarity for all items
+
+Run with `--force` to re-scrape items that already have data:
+```bash
+node scripts/scrape-metadata.js --force
+```

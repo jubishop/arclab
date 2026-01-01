@@ -19,6 +19,9 @@
     <% } %>
     <div class="item-info">
       <p><strong>Category:</strong> <span class="category-badge <%= item.category.replace(/ /g, '-') %>"><%= item.category %></span></p>
+      <% if (item.rarity) { %>
+        <p><strong>Rarity:</strong> <span class="rarity-badge rarity-<%= item.rarity.toLowerCase() %>"><%= item.rarity %></span></p>
+      <% } %>
       <p><strong>Stack Size:</strong> <%= item.stack_size %></p>
     </div>
   </div>

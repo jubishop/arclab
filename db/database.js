@@ -8,32 +8,66 @@ const db = new Database(dbPath);
 // Enable foreign keys
 db.pragma('foreign_keys = ON');
 
-// Category enum - IDs match the database
+// Category enum - IDs stored directly on items
 const Category = Object.freeze({
-  GUN: 1,
-  GUN_MOD: 2,
-  AUGMENT: 3,
-  QUICK_USE: 4,
-  CRAFTING_MATERIAL: 5,
-  AMMUNITION: 6,
-  SHIELD: 7,
-  KEY: 8
+  BASIC_MATERIAL: 1,
+  TOPSIDE_MATERIAL: 2,
+  ADVANCED_MATERIAL: 3,
+  REFINED_MATERIAL: 4,
+  QUICK_USE: 5,
+  KEY: 6,
+  AUGMENT: 7,
+  AMMUNITION: 8,
+  SHIELD: 9,
+  WEAPON: 10,
+  MODIFICATION: 11,
+  TRINKET: 12,
+  MISC: 13
 });
 
 // Category names for display
 const CategoryNames = Object.freeze({
-  [Category.GUN]: 'gun',
-  [Category.GUN_MOD]: 'gun mod',
-  [Category.AUGMENT]: 'augment',
-  [Category.QUICK_USE]: 'quick use',
-  [Category.CRAFTING_MATERIAL]: 'crafting material',
-  [Category.AMMUNITION]: 'ammunition',
-  [Category.SHIELD]: 'shield',
-  [Category.KEY]: 'key'
+  [Category.BASIC_MATERIAL]: 'Basic Material',
+  [Category.TOPSIDE_MATERIAL]: 'Topside Material',
+  [Category.ADVANCED_MATERIAL]: 'Advanced Material',
+  [Category.REFINED_MATERIAL]: 'Refined Material',
+  [Category.QUICK_USE]: 'Quick Use',
+  [Category.KEY]: 'Key',
+  [Category.AUGMENT]: 'Augment',
+  [Category.AMMUNITION]: 'Ammunition',
+  [Category.SHIELD]: 'Shield',
+  [Category.WEAPON]: 'Weapon',
+  [Category.MODIFICATION]: 'Modification',
+  [Category.TRINKET]: 'Trinket',
+  [Category.MISC]: 'Misc'
+});
+
+// Rarity enum - IDs stored directly on items
+const Rarity = Object.freeze({
+  COMMON: 1,
+  UNCOMMON: 2,
+  RARE: 3,
+  EPIC: 4,
+  LEGENDARY: 5
+});
+
+// Rarity names for display
+const RarityNames = Object.freeze({
+  [Rarity.COMMON]: 'Common',
+  [Rarity.UNCOMMON]: 'Uncommon',
+  [Rarity.RARE]: 'Rare',
+  [Rarity.EPIC]: 'Epic',
+  [Rarity.LEGENDARY]: 'Legendary'
 });
 
 // Array of all categories (for dropdowns, validation, etc.)
 const CATEGORIES = Object.entries(CategoryNames).map(([id, name]) => ({
+  id: parseInt(id),
+  name
+}));
+
+// Array of all rarities (for dropdowns, validation, etc.)
+const RARITIES = Object.entries(RarityNames).map(([id, name]) => ({
   id: parseInt(id),
   name
 }));
@@ -57,6 +91,12 @@ function init() {
   const hasImagePath = currentTableInfo.some(col => col.name === 'image_path');
   if (!hasImagePath) {
     db.exec('ALTER TABLE items ADD COLUMN image_path TEXT');
+  }
+
+  // Add rarity_id column if it doesn't exist
+  const hasRarityId = currentTableInfo.some(col => col.name === 'rarity_id');
+  if (!hasRarityId) {
+    db.exec('ALTER TABLE items ADD COLUMN rarity_id INTEGER');
   }
 }
 
@@ -136,44 +176,56 @@ function migrate() {
 
 // Get all items with category info
 function getAllItems() {
-  return db.prepare(`
-    SELECT i.*, c.name AS category,
+  const items = db.prepare(`
+    SELECT i.*,
            EXISTS(SELECT 1 FROM recipes WHERE item_id = i.id) AS is_craftable
     FROM items i
-    JOIN categories c ON i.category_id = c.id
-    ORDER BY c.name, i.name
+    ORDER BY i.category_id, i.name
   `).all();
+  // Add category and rarity names
+  return items.map(item => ({
+    ...item,
+    category: CategoryNames[item.category_id] || 'Unknown',
+    rarity: RarityNames[item.rarity_id] || null
+  }));
 }
 
 // Get single item by ID
 function getItemById(id) {
-  return db.prepare(`
-    SELECT i.*, c.name AS category,
+  const item = db.prepare(`
+    SELECT i.*,
            EXISTS(SELECT 1 FROM recipes WHERE item_id = i.id) AS is_craftable
     FROM items i
-    JOIN categories c ON i.category_id = c.id
     WHERE i.id = ?
   `).get(id);
+  if (item) {
+    item.category = CategoryNames[item.category_id] || 'Unknown';
+    item.rarity = RarityNames[item.rarity_id] || null;
+  }
+  return item;
 }
 
 // Get recipe for an item (list of materials)
 function getRecipeByItemId(itemId) {
-  return db.prepare(`
-    SELECT r.*, m.name AS material_name, c.name AS material_category, m.stack_size AS material_stack_size
+  const recipes = db.prepare(`
+    SELECT r.*, m.name AS material_name, m.category_id AS material_category_id, m.stack_size AS material_stack_size
     FROM recipes r
     JOIN items m ON r.material_id = m.id
-    JOIN categories c ON m.category_id = c.id
     WHERE r.item_id = ?
   `).all(itemId);
+  return recipes.map(r => ({
+    ...r,
+    material_category: CategoryNames[r.material_category_id] || 'Unknown'
+  }));
 }
 
-// Get all crafting materials (for dropdown)
+// Get all crafting materials (for dropdown) - includes all material types
 function getCraftingMaterials() {
   return db.prepare(`
     SELECT id, name FROM items
-    WHERE category_id = ?
+    WHERE category_id IN (?, ?, ?, ?)
     ORDER BY name
-  `).all(Category.CRAFTING_MATERIAL);
+  `).all(Category.BASIC_MATERIAL, Category.TOPSIDE_MATERIAL, Category.ADVANCED_MATERIAL, Category.REFINED_MATERIAL);
 }
 
 // Create a new item
@@ -224,14 +276,17 @@ function addRecipeEntry(itemId, materialId, quantity) {
 
 // Get items that use this material in their recipes
 function getItemsUsingMaterial(materialId) {
-  return db.prepare(`
-    SELECT i.id, i.name, c.name AS category, i.stack_size, r.quantity
+  const items = db.prepare(`
+    SELECT i.id, i.name, i.category_id, i.stack_size, r.quantity
     FROM recipes r
     JOIN items i ON r.item_id = i.id
-    JOIN categories c ON i.category_id = c.id
     WHERE r.material_id = ?
-    ORDER BY c.name, i.name
+    ORDER BY i.category_id, i.name
   `).all(materialId);
+  return items.map(item => ({
+    ...item,
+    category: CategoryNames[item.category_id] || 'Unknown'
+  }));
 }
 
 // Save full recipe (delete existing and insert new)
@@ -256,13 +311,16 @@ function saveRecipe(itemId, materials) {
 
 // Get saved stash configuration
 function getStash() {
-  return db.prepare(`
-    SELECT s.item_id, s.quantity, i.name, c.name AS category
+  const stash = db.prepare(`
+    SELECT s.item_id, s.quantity, i.name, i.category_id
     FROM stash_items s
     JOIN items i ON s.item_id = i.id
-    JOIN categories c ON i.category_id = c.id
-    ORDER BY c.name, i.name
+    ORDER BY i.category_id, i.name
   `).all();
+  return stash.map(item => ({
+    ...item,
+    category: CategoryNames[item.category_id] || 'Unknown'
+  }));
 }
 
 // Save stash configuration (replaces existing)
@@ -287,8 +345,20 @@ function saveStash(items) {
 
 // Helper to get category ID from name (for backwards compatibility)
 function getCategoryId(name) {
-  const entry = Object.entries(CategoryNames).find(([_, n]) => n === name);
+  const entry = Object.entries(CategoryNames).find(([_, n]) => n.toLowerCase() === name.toLowerCase());
   return entry ? parseInt(entry[0]) : null;
+}
+
+// Helper to get rarity ID from name
+function getRarityId(name) {
+  const entry = Object.entries(RarityNames).find(([_, n]) => n.toLowerCase() === name.toLowerCase());
+  return entry ? parseInt(entry[0]) : null;
+}
+
+// Update item category and rarity (for scraper)
+function updateItemCategoryAndRarity(id, categoryId, rarityId) {
+  const stmt = db.prepare('UPDATE items SET category_id = ?, rarity_id = ? WHERE id = ?');
+  return stmt.run(categoryId, rarityId, id);
 }
 
 module.exports = {
@@ -297,6 +367,9 @@ module.exports = {
   Category,
   CategoryNames,
   CATEGORIES,
+  Rarity,
+  RarityNames,
+  RARITIES,
   getAllItems,
   getItemById,
   getRecipeByItemId,
@@ -305,11 +378,13 @@ module.exports = {
   createItem,
   updateItem,
   updateItemImage,
+  updateItemCategoryAndRarity,
   deleteItem,
   deleteRecipesByItemId,
   addRecipeEntry,
   saveRecipe,
   getStash,
   saveStash,
-  getCategoryId
+  getCategoryId,
+  getRarityId
 };

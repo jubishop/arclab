@@ -143,14 +143,54 @@ tr:hover {
   font-weight: 500;
 }
 
-.gun { background: #744210; }
-.gun-mod { background: #5a4a10; }
-.augment { background: #285e61; }
-.quick-use { background: #5c2d91; }
-.crafting-material { background: #2b5329; }
-.ammunition { background: #7b341e; }
-.shield { background: #2c5282; }
-.key { background: #6b4c9a; }
+/* Category colors */
+.Basic-Material { background: #2b5329; }
+.Topside-Material { background: #3d5a3d; }
+.Advanced-Material { background: #4a6a4a; }
+.Refined-Material { background: #5a7a5a; }
+.Quick-Use { background: #5c2d91; }
+.Key { background: #6b4c9a; }
+.Augment { background: #285e61; }
+.Ammunition { background: #7b341e; }
+.Shield { background: #2c5282; }
+.Weapon { background: #744210; }
+.Modification { background: #5a4a10; }
+.Trinket { background: #8b4513; }
+.Misc { background: #4a5568; }
+
+/* Rarity badges */
+.rarity-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.rarity-common {
+  background: #717471;
+  color: #fff;
+}
+
+.rarity-uncommon {
+  background: #41eb6a;
+  color: #000;
+}
+
+.rarity-rare {
+  background: #1ecbfc;
+  color: #000;
+}
+
+.rarity-epic {
+  background: #d8299b;
+  color: #fff;
+}
+
+.rarity-legendary {
+  background: #fbc700;
+  color: #000;
+}
 
 /* Forms */
 .form-group {
