@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS items (
   name TEXT NOT NULL UNIQUE,
   stack_size INTEGER NOT NULL,
   category_id INTEGER NOT NULL,
+  image_path TEXT,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (category_id) REFERENCES categories(id)
 );

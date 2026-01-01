@@ -16,7 +16,8 @@ const Category = Object.freeze({
   QUICK_USE: 4,
   CRAFTING_MATERIAL: 5,
   AMMUNITION: 6,
-  SHIELD: 7
+  SHIELD: 7,
+  KEY: 8
 });
 
 // Category names for display
@@ -27,7 +28,8 @@ const CategoryNames = Object.freeze({
   [Category.QUICK_USE]: 'quick use',
   [Category.CRAFTING_MATERIAL]: 'crafting material',
   [Category.AMMUNITION]: 'ammunition',
-  [Category.SHIELD]: 'shield'
+  [Category.SHIELD]: 'shield',
+  [Category.KEY]: 'key'
 });
 
 // Array of all categories (for dropdowns, validation, etc.)
@@ -48,6 +50,13 @@ function init() {
     const schema = fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf8');
     db.exec(schema);
     seedCategories();
+  }
+
+  // Add image_path column if it doesn't exist (re-check after migrations)
+  const currentTableInfo = db.prepare("PRAGMA table_info(items)").all();
+  const hasImagePath = currentTableInfo.some(col => col.name === 'image_path');
+  if (!hasImagePath) {
+    db.exec('ALTER TABLE items ADD COLUMN image_path TEXT');
   }
 }
 
@@ -192,6 +201,12 @@ function deleteItem(id) {
   return stmt.run(id);
 }
 
+// Update item image path
+function updateItemImage(id, imagePath) {
+  const stmt = db.prepare('UPDATE items SET image_path = ? WHERE id = ?');
+  return stmt.run(imagePath, id);
+}
+
 // Delete all recipes for an item
 function deleteRecipesByItemId(itemId) {
   const stmt = db.prepare('DELETE FROM recipes WHERE item_id = ?');
@@ -289,6 +304,7 @@ module.exports = {
   getCraftingMaterials,
   createItem,
   updateItem,
+  updateItemImage,
   deleteItem,
   deleteRecipesByItemId,
   addRecipeEntry,

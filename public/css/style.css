@@ -150,6 +150,7 @@ tr:hover {
 .crafting-material { background: #2b5329; }
 .ammunition { background: #7b341e; }
 .shield { background: #2c5282; }
+.key { background: #6b4c9a; }
 
 /* Forms */
 .form-group {
@@ -229,6 +230,29 @@ select:focus {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.5rem;
+}
+
+.item-details {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.item-image {
+  flex-shrink: 0;
+}
+
+.item-image img {
+  max-width: 128px;
+  max-height: 128px;
+  border-radius: 8px;
+  background: #0f1a2e;
+  padding: 0.5rem;
+  border: 1px solid #0f3460;
+}
+
+.item-info p {
+  margin-bottom: 0.5rem;
 }
 
 .item-details p {

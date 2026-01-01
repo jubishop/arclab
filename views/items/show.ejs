@@ -12,8 +12,15 @@
   </div>
 
   <div class="item-details">
-    <p><strong>Category:</strong> <span class="category-badge <%= item.category.replace(/ /g, '-') %>"><%= item.category %></span></p>
-    <p><strong>Stack Size:</strong> <%= item.stack_size %></p>
+    <% if (item.image_path) { %>
+      <div class="item-image">
+        <img src="<%= item.image_path %>" alt="<%= item.name %>">
+      </div>
+    <% } %>
+    <div class="item-info">
+      <p><strong>Category:</strong> <span class="category-badge <%= item.category.replace(/ /g, '-') %>"><%= item.category %></span></p>
+      <p><strong>Stack Size:</strong> <%= item.stack_size %></p>
+    </div>
   </div>
 
   <% if (usedIn && usedIn.length > 0) { %>
