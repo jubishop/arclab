@@ -68,13 +68,8 @@ function calculateOptimalInventory(desiredItems) {
     };
   });
 
-  // Sort by category then name
-  result.sort((a, b) => {
-    if (a.item.category !== b.item.category) {
-      return a.item.category.localeCompare(b.item.category);
-    }
-    return a.item.name.localeCompare(b.item.name);
-  });
+  // Sort by rarity (highest first), then alphabetically by name
+  result.sort(sortByRarityThenName);
 
   return result;
 }
@@ -93,6 +88,16 @@ function addToInventory(inventory, item, quantity, reason) {
   }
 }
 
+// Sort by rarity (highest first), then alphabetically by name
+function sortByRarityThenName(a, b) {
+  const aRarity = a.item.rarity_id || 0;
+  const bRarity = b.item.rarity_id || 0;
+  if (aRarity !== bRarity) {
+    return bRarity - aRarity; // Higher rarity first (legendary=5 before common=1)
+  }
+  return a.item.name.localeCompare(b.item.name);
+}
+
 // Show planner page (load saved stash and auto-calculate)
 router.get('/', (req, res) => {
   const craftableItems = getCraftableItems();
@@ -104,7 +109,7 @@ router.get('/', (req, res) => {
   const selectedItems = savedStash.map(s => {
     const item = db.getItemById(s.item_id);
     return { item, stacks: s.quantity };
-  });
+  }).sort(sortByRarityThenName);
 
   // Auto-calculate if there are saved items
   let results = null;
@@ -151,7 +156,7 @@ router.post('/', (req, res) => {
   const selectedItems = desiredItems.map(d => {
     const item = db.getItemById(d.itemId);
     return { item, stacks: d.stacks };
-  });
+  }).sort(sortByRarityThenName);
 
   const results = calculateOptimalInventory(desiredItems);
 
