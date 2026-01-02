@@ -521,11 +521,26 @@ select:focus {
 .stash-content {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+@media (min-width: 1100px) {
+  .stash-content {
+    flex-direction: row;
+    gap: 2rem;
+  }
+
+  body:has(.stash-planner) main {
+    max-width: 1600px;
+  }
 }
 
 /* Section Headers */
 .stash-section {
-  margin-bottom: 2rem;
+  flex: 1;
+  min-width: 0;
 }
 
 .stash-section-header {
@@ -887,7 +902,17 @@ select:focus {
 .stash-divider {
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--stash-border), transparent);
-  margin: 1.5rem 0;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+@media (min-width: 1100px) {
+  .stash-divider {
+    width: 1px;
+    height: auto;
+    align-self: stretch;
+    background: linear-gradient(180deg, transparent, var(--stash-border), transparent);
+  }
 }
 
 /* Results section styling */
