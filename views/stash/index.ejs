@@ -14,7 +14,7 @@
   <div class="stash-layout">
     <!-- Category Tabs Sidebar -->
     <div class="category-tabs">
-      <button class="category-tab active" data-category="all" title="All Items">
+      <button class="category-tab active" data-category="craftable" title="All Craftable">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="3" y="3" width="7" height="7"></rect>
           <rect x="14" y="3" width="7" height="7"></rect>
@@ -92,7 +92,9 @@
                      data-item-id="<%= s.item.id %>"
                      data-stacks="<%= s.stacks %>"
                      data-category="<%= s.item.category_id %>"
-                     data-name="<%= s.item.name %>">
+                     data-name="<%= s.item.name %>"
+                     onclick="goToItem(<%= s.item.id %>)"
+                     style="cursor: pointer;">
                   <div class="quantity-controls">
                     <button class="btn-minus" onclick="adjustQuantity(<%= s.item.id %>, -1)">-</button>
                     <button class="btn-plus" onclick="adjustQuantity(<%= s.item.id %>, 1)">+</button>
@@ -128,7 +130,9 @@
               <div class="item-cell rarity-<%= r.item.rarity ? r.item.rarity.toLowerCase() : 'common' %>"
                    data-category="<%= r.item.category_id %>"
                    data-name="<%= r.item.name %>"
-                   data-reason="<%= r.reasons.join(', ') %>">
+                   data-reason="<%= r.reasons.join(', ') %>"
+                   onclick="goToItem(<%= r.item.id %>)"
+                   style="cursor: pointer;">
                 <% if (r.item.image_path) { %>
                   <img src="<%= r.item.image_path %>" alt="<%= r.item.name %>">
                 <% } else { %>
@@ -175,9 +179,9 @@
   // All items data from server
   const allItems = <%- JSON.stringify(allItems) %>;
 
-  // Category mapping for tabs
+  // Category mapping for tabs (all tabs require is_craftable)
   const categoryMapping = {
-    'all': null,
+    'craftable': null,  // All craftable items
     'augment': [7],
     'shield': [9],
     'weapon': [10],
@@ -186,11 +190,11 @@
     'quick-use': [5],
     'key': [6],
     'material': [1, 2, 3, 4],
-    'misc': [12, 13]
+    'misc': [12, 13, 14, 15]  // Trinket, Misc, Recyclable, Nature
   };
 
   // Current state
-  let currentCategory = 'all';
+  let currentCategory = 'craftable';
   let desiredItems = {};
 
   // Initialize from server data
@@ -258,12 +262,13 @@
     const categoryIds = categoryMapping[currentCategory];
     const searchTerm = document.getElementById('modal-search').value.toLowerCase();
 
-    // Filter items by category and search
+    // Filter items: must be craftable, match category, match search, not already added
     let filteredItems = allItems.filter(item => {
+      const isCraftable = item.is_craftable;
       const matchesCategory = categoryIds === null || categoryIds.includes(item.category_id);
       const matchesSearch = item.name.toLowerCase().includes(searchTerm);
       const notAlreadyAdded = !desiredItems[item.id];
-      return matchesCategory && matchesSearch && notAlreadyAdded;
+      return isCraftable && matchesCategory && matchesSearch && notAlreadyAdded;
     });
 
     grid.innerHTML = filteredItems.map(item => `
@@ -305,6 +310,11 @@
     event.stopPropagation();
     delete desiredItems[itemId];
     saveAndRefresh();
+  }
+
+  // Navigate to item details page
+  function goToItem(itemId) {
+    window.location.href = '/items/' + itemId;
   }
 
   // Save and refresh

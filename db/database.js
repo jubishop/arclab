@@ -22,7 +22,9 @@ const Category = Object.freeze({
   WEAPON: 10,
   MODIFICATION: 11,
   TRINKET: 12,
-  MISC: 13
+  MISC: 13,
+  RECYCLABLE: 14,
+  NATURE: 15
 });
 
 // Category names for display
@@ -39,7 +41,9 @@ const CategoryNames = Object.freeze({
   [Category.WEAPON]: 'Weapon',
   [Category.MODIFICATION]: 'Modification',
   [Category.TRINKET]: 'Trinket',
-  [Category.MISC]: 'Misc'
+  [Category.MISC]: 'Misc',
+  [Category.RECYCLABLE]: 'Recyclable',
+  [Category.NATURE]: 'Nature'
 });
 
 // Rarity enum - IDs stored directly on items

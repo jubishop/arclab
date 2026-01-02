@@ -40,6 +40,8 @@ Categories and rarities are stored as integer enums (no FK tables):
 11. Modification
 12. Trinket
 13. Misc
+14. Recyclable
+15. Nature
 
 **Rarities (rarity_id):**
 1. Common

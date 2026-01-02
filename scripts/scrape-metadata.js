@@ -50,6 +50,10 @@ const CATEGORY_MAP = {
   // Trinkets
   'trinket': db.Category.TRINKET,
   'trinkets': db.Category.TRINKET,
+  // Recyclable
+  'recyclable': db.Category.RECYCLABLE,
+  // Nature
+  'nature': db.Category.NATURE,
   // Misc
   'misc': db.Category.MISC,
   // Weapons (singular and plural forms)
