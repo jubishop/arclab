@@ -82,7 +82,7 @@
       <!-- Desired Items Section -->
       <div class="stash-section desired-section">
         <div class="stash-section-header">
-          <h2>Your Desired Loadout</h2>
+          <h2>Desired Inventory</h2>
         </div>
         <div class="item-grid" id="desired-grid">
           <% if (selectedItems && selectedItems.length > 0) { %>
@@ -363,7 +363,7 @@
   `;
   document.body.appendChild(tooltip);
 
-  document.querySelectorAll('.optimal-section .item-cell').forEach(cell => {
+  function attachTooltip(cell) {
     cell.addEventListener('mouseenter', (e) => {
       const name = cell.dataset.name || '';
       const reason = cell.dataset.reason || '';
@@ -381,7 +381,11 @@
     cell.addEventListener('mouseleave', () => {
       tooltip.style.opacity = '0';
     });
-  });
+  }
+
+  // Attach tooltips to both desired and optimal inventory items
+  document.querySelectorAll('.desired-section .item-cell').forEach(attachTooltip);
+  document.querySelectorAll('.optimal-section .item-cell').forEach(attachTooltip);
 </script>
 
 <%- include('../partials/footer') %>
