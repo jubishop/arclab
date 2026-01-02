@@ -700,6 +700,36 @@ select:focus {
   color: #68d391;
 }
 
+/* Remove button */
+.item-cell .btn-remove {
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(197, 48, 48, 0.9);
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s ease, background 0.15s ease;
+  z-index: 3;
+}
+
+.item-cell:hover .btn-remove {
+  opacity: 1;
+}
+
+.item-cell .btn-remove:hover {
+  background: #e53e3e;
+}
+
 /* Add Item Cell */
 .add-item-cell {
   width: 100px;

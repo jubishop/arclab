@@ -97,6 +97,7 @@
                     <button class="btn-minus" onclick="adjustQuantity(<%= s.item.id %>, -1)">-</button>
                     <button class="btn-plus" onclick="adjustQuantity(<%= s.item.id %>, 1)">+</button>
                   </div>
+                  <button class="btn-remove" onclick="removeItem(<%= s.item.id %>)">&times;</button>
                   <% if (s.item.image_path) { %>
                     <img src="<%= s.item.image_path %>" alt="<%= s.item.name %>">
                   <% } else { %>
@@ -296,6 +297,13 @@
     } else {
       desiredItems[itemId] = newQty;
     }
+    saveAndRefresh();
+  }
+
+  // Remove item entirely
+  function removeItem(itemId) {
+    event.stopPropagation();
+    delete desiredItems[itemId];
     saveAndRefresh();
   }
 
