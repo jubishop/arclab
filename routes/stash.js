@@ -128,13 +128,14 @@ router.get('/', (req, res) => {
     allItems,
     results,
     selectedItems,
-    totalSlots
+    totalSlots,
+    activeCategory: 'craftable'
   });
 });
 
 // Calculate stash and save configuration
 router.post('/', (req, res) => {
-  const { item_ids, quantities } = req.body;
+  const { item_ids, quantities, active_category } = req.body;
 
   const craftableItems = getCraftableItems();
   // Get all items for the modal selector (no filtering - let client filter by category tabs)
@@ -168,7 +169,8 @@ router.post('/', (req, res) => {
     allItems,
     results,
     selectedItems,
-    totalSlots
+    totalSlots,
+    activeCategory: active_category || 'craftable'
   });
 });
 

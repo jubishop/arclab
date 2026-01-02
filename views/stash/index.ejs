@@ -172,6 +172,7 @@
 
 <!-- Hidden form for saving -->
 <form id="stash-form" action="/stash" method="POST" class="stash-form">
+  <input type="hidden" name="active_category" id="active-category-input" value="<%= activeCategory || 'craftable' %>">
   <div id="form-inputs"></div>
 </form>
 
@@ -193,8 +194,8 @@
     'misc': [12, 13, 14, 15]  // Trinket, Misc, Recyclable, Nature
   };
 
-  // Current state
-  let currentCategory = 'craftable';
+  // Current state - restore from server
+  let currentCategory = '<%= activeCategory || 'craftable' %>';
   let desiredItems = {};
 
   // Initialize from server data
@@ -212,9 +213,20 @@
       document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
       currentCategory = tab.dataset.category;
+      document.getElementById('active-category-input').value = currentCategory;
       filterGridsByCategory();
     });
   });
+
+  // Restore active tab on page load
+  (function initActiveTab() {
+    document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+    const activeTab = document.querySelector(`.category-tab[data-category="${currentCategory}"]`);
+    if (activeTab) {
+      activeTab.classList.add('active');
+    }
+    filterGridsByCategory();
+  })();
 
   function filterGridsByCategory() {
     const categoryIds = categoryMapping[currentCategory];
