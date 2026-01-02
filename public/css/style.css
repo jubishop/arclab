@@ -855,6 +855,7 @@ select:focus {
 
 .item-modal-grid {
   padding: 1rem;
+  padding-top: 2.5rem; /* Extra space for tooltips to appear above top-row items */
   overflow-y: auto;
   flex: 1;
 }
@@ -866,10 +867,12 @@ select:focus {
 .item-modal-grid .item-cell {
   width: 80px;
   height: 80px;
+  overflow: visible; /* Allow tooltip to appear above cell */
 }
 
 .item-modal-grid .item-cell img {
   padding: 6px;
+  border-radius: 6px; /* Clip image corners since parent overflow is visible */
 }
 
 /* Item name tooltip on hover */

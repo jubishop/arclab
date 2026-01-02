@@ -4,6 +4,10 @@
 
 This is an ARC Raiders item tracking web application built with Node.js, Express, EJS, and SQLite.
 
+## Development Environment
+
+- **Browser**: Safari (always test in Safari)
+
 ## Key Files
 
 - `app.js` - Express server entry point
