@@ -549,27 +549,15 @@ select:focus {
 /* Item Grid */
 .item-grid {
   display: grid;
-  grid-template-columns: repeat(4, 100px);
-  gap: 8px;
-}
-
-@media (min-width: 600px) {
-  .item-grid {
-    grid-template-columns: repeat(5, 100px);
-  }
-}
-
-@media (min-width: 768px) {
-  .item-grid {
-    grid-template-columns: repeat(6, 100px);
-  }
+  grid-template-columns: repeat(4, 120px);
+  gap: 10px;
 }
 
 /* Individual Item Cell */
 .item-cell {
   position: relative;
-  width: 100px;
-  height: 100px;
+  width: 120px;
+  height: 120px;
   background: var(--stash-cell-bg);
   border: 2px solid var(--stash-border);
   border-radius: 8px;
@@ -732,8 +720,8 @@ select:focus {
 
 /* Add Item Cell */
 .add-item-cell {
-  width: 100px;
-  height: 100px;
+  width: 120px;
+  height: 120px;
   background: transparent;
   border: 2px dashed #4a5568;
   border-radius: 8px;
@@ -980,10 +968,6 @@ select:focus {
 }
 
 @media (max-width: 480px) {
-  .item-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
   .item-modal-grid .item-grid {
     grid-template-columns: repeat(4, 1fr);
   }
