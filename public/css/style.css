@@ -424,3 +424,537 @@ select:focus {
   padding: 0.75rem 1rem;
   font-size: 1rem;
 }
+
+/* ==========================================
+   STASH PLANNER - Game-Style Grid UI
+   ========================================== */
+
+:root {
+  --rarity-common: #717471;
+  --rarity-uncommon: #41eb6a;
+  --rarity-rare: #1ecbfc;
+  --rarity-epic: #d8299b;
+  --rarity-legendary: #fbc700;
+  --stash-bg: #0d1525;
+  --stash-cell-bg: #1a2535;
+  --stash-border: #2a3a4d;
+}
+
+/* Main Container */
+.stash-planner {
+  background: var(--stash-bg);
+  border-radius: 12px;
+  padding: 1.5rem;
+  min-height: 600px;
+}
+
+.stash-planner h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+}
+
+.stash-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.stash-header .slot-count {
+  font-size: 1.25rem;
+  color: #a0aec0;
+}
+
+.stash-header .slot-count strong {
+  color: #fff;
+}
+
+/* Layout with Sidebar */
+.stash-layout {
+  display: flex;
+  gap: 1rem;
+}
+
+/* Category Tabs Sidebar */
+.category-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  width: 56px;
+  flex-shrink: 0;
+}
+
+.category-tab {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.5rem;
+  color: #6b7280;
+  transition: all 0.15s ease;
+}
+
+.category-tab:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #9ca3af;
+}
+
+.category-tab.active {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #4fc3f7;
+  color: #fff;
+}
+
+.category-tab svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* Main Content Area */
+.stash-content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Section Headers */
+.stash-section {
+  margin-bottom: 2rem;
+}
+
+.stash-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--stash-border);
+}
+
+.stash-section-header h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+/* Item Grid */
+.item-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 100px);
+  gap: 8px;
+}
+
+@media (min-width: 600px) {
+  .item-grid {
+    grid-template-columns: repeat(5, 100px);
+  }
+}
+
+@media (min-width: 768px) {
+  .item-grid {
+    grid-template-columns: repeat(6, 100px);
+  }
+}
+
+/* Individual Item Cell */
+.item-cell {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  background: var(--stash-cell-bg);
+  border: 2px solid var(--stash-border);
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.item-cell:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Rarity Border Colors */
+.item-cell.rarity-common { border-color: var(--rarity-common); }
+.item-cell.rarity-uncommon {
+  border-color: var(--rarity-uncommon);
+  box-shadow: inset 0 0 20px rgba(65, 235, 106, 0.1);
+}
+.item-cell.rarity-rare {
+  border-color: var(--rarity-rare);
+  box-shadow: inset 0 0 20px rgba(30, 203, 252, 0.15);
+}
+.item-cell.rarity-epic {
+  border-color: var(--rarity-epic);
+  box-shadow: inset 0 0 20px rgba(216, 41, 155, 0.2);
+}
+.item-cell.rarity-legendary {
+  border-color: var(--rarity-legendary);
+  box-shadow: 0 0 12px rgba(251, 199, 0, 0.4), inset 0 0 20px rgba(251, 199, 0, 0.15);
+}
+
+/* Item Image */
+.item-cell img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 8px;
+}
+
+/* Rarity Corner Triangle */
+.item-cell::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 0 24px 24px;
+  border-color: transparent transparent var(--rarity-rare) transparent;
+}
+
+.item-cell.rarity-common::after { border-color: transparent transparent var(--rarity-common) transparent; }
+.item-cell.rarity-uncommon::after { border-color: transparent transparent var(--rarity-uncommon) transparent; }
+.item-cell.rarity-rare::after { border-color: transparent transparent var(--rarity-rare) transparent; }
+.item-cell.rarity-epic::after { border-color: transparent transparent var(--rarity-epic) transparent; }
+.item-cell.rarity-legendary::after { border-color: transparent transparent var(--rarity-legendary) transparent; }
+
+/* Quantity Badge */
+.quantity-badge {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  z-index: 2;
+}
+
+/* Craftable Icon (wrench) */
+.craftable-icon {
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+  width: 18px;
+  height: 18px;
+  color: #9ca3af;
+  z-index: 2;
+}
+
+/* Quantity Controls on Desired Items */
+.item-cell .quantity-controls {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 4px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  z-index: 3;
+}
+
+.item-cell:hover .quantity-controls {
+  opacity: 1;
+}
+
+.quantity-controls button {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid #4a5568;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.quantity-controls button:hover {
+  background: #4a5568;
+}
+
+.quantity-controls .btn-minus {
+  color: #fc8181;
+}
+
+.quantity-controls .btn-plus {
+  color: #68d391;
+}
+
+/* Add Item Cell */
+.add-item-cell {
+  width: 100px;
+  height: 100px;
+  background: transparent;
+  border: 2px dashed #4a5568;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.add-item-cell:hover {
+  border-color: #4fc3f7;
+  background: rgba(79, 195, 247, 0.1);
+}
+
+.add-item-cell .plus-icon {
+  font-size: 2rem;
+  color: #6b7280;
+  transition: color 0.15s ease;
+}
+
+.add-item-cell:hover .plus-icon {
+  color: #4fc3f7;
+}
+
+/* Item Selection Modal */
+.item-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.item-modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.item-modal {
+  background: var(--stash-bg);
+  border: 1px solid var(--stash-border);
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  transform: scale(0.95);
+  transition: transform 0.2s ease;
+}
+
+.item-modal-overlay.active .item-modal {
+  transform: scale(1);
+}
+
+.item-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--stash-border);
+}
+
+.item-modal-header h3 {
+  font-size: 1.25rem;
+  margin: 0;
+  color: #fff;
+}
+
+.item-modal-close {
+  background: none;
+  border: none;
+  color: #6b7280;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  line-height: 1;
+}
+
+.item-modal-close:hover {
+  color: #fff;
+}
+
+.item-modal-search {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--stash-border);
+}
+
+.item-modal-search input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: #1a2535;
+  border: 1px solid var(--stash-border);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.item-modal-search input:focus {
+  outline: none;
+  border-color: #4fc3f7;
+}
+
+.item-modal-search input::placeholder {
+  color: #6b7280;
+}
+
+.item-modal-grid {
+  padding: 1rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.item-modal-grid .item-grid {
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+}
+
+.item-modal-grid .item-cell {
+  width: 80px;
+  height: 80px;
+}
+
+.item-modal-grid .item-cell img {
+  padding: 6px;
+}
+
+/* Item name tooltip on hover */
+.item-cell[data-name]::before {
+  content: attr(data-name);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.95);
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease, visibility 0.15s ease;
+  z-index: 10;
+  pointer-events: none;
+  margin-bottom: 4px;
+}
+
+.item-cell:hover::before {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Divider between sections */
+.stash-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--stash-border), transparent);
+  margin: 1.5rem 0;
+}
+
+/* Results section styling */
+.optimal-section .item-cell {
+  cursor: help;
+}
+
+.optimal-section .item-cell:hover {
+  transform: none;
+}
+
+/* Hide the CSS tooltip for optimal items - using JS tooltip instead */
+.optimal-section .item-cell::before {
+  display: none;
+}
+
+/* Empty state */
+.stash-empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #6b7280;
+}
+
+.stash-empty p {
+  margin-bottom: 1rem;
+}
+
+/* Hidden form for submitting */
+.stash-form {
+  display: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .stash-planner {
+    padding: 1rem;
+  }
+
+  .stash-layout {
+    flex-direction: column;
+  }
+
+  .category-tabs {
+    flex-direction: row;
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    gap: 0.5rem;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .category-tab {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+  }
+
+  .item-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .item-cell,
+  .add-item-cell {
+    width: 100%;
+    aspect-ratio: 1;
+    height: auto;
+  }
+
+  .stash-header h1 {
+    font-size: 1.25rem;
+  }
+
+  .quantity-controls button {
+    width: 20px;
+    height: 20px;
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .item-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .item-modal-grid .item-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

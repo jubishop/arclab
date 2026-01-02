@@ -1,120 +1,379 @@
 <%- include('../partials/header') %>
 
-<div class="container">
-  <h1>Stash Planner</h1>
-  <p class="help-text">Select items and how many stacks you want. The system will calculate the most efficient way to carry them. Your stash is saved automatically.</p>
+<div class="container stash-planner">
+  <div class="stash-header">
+    <div>
+      <h1>STASH PLANNER</h1>
+      <p class="help-text">Plan your inventory for maximum efficiency</p>
+    </div>
+    <div class="slot-count">
+      <strong id="total-slots"><%= totalSlots || 0 %></strong> slots used
+    </div>
+  </div>
 
-  <form action="/stash" method="POST">
-    <div class="loadout-items" id="items-container">
-      <% if (selectedItems && selectedItems.length > 0) { %>
-        <% selectedItems.forEach((s, index) => { %>
-          <div class="loadout-row">
-            <select name="item_ids" required>
-              <option value="">Select item</option>
-              <% allItems.forEach(item => { %>
-                <option value="<%= item.id %>" <%= s.item && s.item.id === item.id ? 'selected' : '' %>><%= item.name %> (<%= item.category %>)</option>
-              <% }) %>
-            </select>
-            <input type="number" name="quantities" min="1" value="<%= s.stacks %>" required placeholder="Stacks">
-            <button type="button" class="btn btn-danger remove-row">Remove</button>
+  <div class="stash-layout">
+    <!-- Category Tabs Sidebar -->
+    <div class="category-tabs">
+      <button class="category-tab active" data-category="all" title="All Items">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7"></rect>
+          <rect x="14" y="3" width="7" height="7"></rect>
+          <rect x="3" y="14" width="7" height="7"></rect>
+          <rect x="14" y="14" width="7" height="7"></rect>
+        </svg>
+      </button>
+      <button class="category-tab" data-category="augment" title="Augments">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M12 2v4m0 12v4M2 12h4m12 0h4"></path>
+          <path d="M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"></path>
+        </svg>
+      </button>
+      <button class="category-tab" data-category="shield" title="Shields">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+        </svg>
+      </button>
+      <button class="category-tab" data-category="weapon" title="Weapons">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2l6 6-8 8-6-6 8-8z"></path>
+          <path d="M4 20l4-4"></path>
+          <path d="M18 4l2 2"></path>
+        </svg>
+      </button>
+      <button class="category-tab" data-category="ammunition" title="Ammunition">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="4" y="4" width="6" height="16" rx="1"></rect>
+          <rect x="14" y="4" width="6" height="16" rx="1"></rect>
+        </svg>
+      </button>
+      <button class="category-tab" data-category="modification" title="Modifications">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+        </svg>
+      </button>
+      <button class="category-tab" data-category="quick-use" title="Quick Use">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
+        </svg>
+      </button>
+      <button class="category-tab" data-category="key" title="Keys">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="m21 2-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0 3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
+        </svg>
+      </button>
+      <button class="category-tab" data-category="material" title="Materials">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+          <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+          <line x1="12" y1="22.08" x2="12" y2="12"></line>
+        </svg>
+      </button>
+      <button class="category-tab" data-category="misc" title="Misc & Trinkets">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+          <line x1="7" y1="7" x2="7.01" y2="7"></line>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="stash-content">
+      <!-- Desired Items Section -->
+      <div class="stash-section desired-section">
+        <div class="stash-section-header">
+          <h2>Your Desired Loadout</h2>
+        </div>
+        <div class="item-grid" id="desired-grid">
+          <% if (selectedItems && selectedItems.length > 0) { %>
+            <% selectedItems.forEach(s => { %>
+              <% if (s.item) { %>
+                <div class="item-cell rarity-<%= s.item.rarity ? s.item.rarity.toLowerCase() : 'common' %>"
+                     data-item-id="<%= s.item.id %>"
+                     data-stacks="<%= s.stacks %>"
+                     data-category="<%= s.item.category_id %>"
+                     data-name="<%= s.item.name %>">
+                  <div class="quantity-controls">
+                    <button class="btn-minus" onclick="adjustQuantity(<%= s.item.id %>, -1)">-</button>
+                    <button class="btn-plus" onclick="adjustQuantity(<%= s.item.id %>, 1)">+</button>
+                  </div>
+                  <% if (s.item.image_path) { %>
+                    <img src="<%= s.item.image_path %>" alt="<%= s.item.name %>">
+                  <% } else { %>
+                    <div style="display:flex;align-items:center;justify-content:center;height:100%;color:#6b7280;font-size:0.7rem;text-align:center;padding:8px;"><%= s.item.name %></div>
+                  <% } %>
+                  <span class="quantity-badge">x<%= s.stacks %></span>
+                </div>
+              <% } %>
+            <% }) %>
+          <% } %>
+          <!-- Add Item Cell -->
+          <div class="add-item-cell" onclick="openItemModal()">
+            <span class="plus-icon">+</span>
           </div>
-        <% }) %>
-      <% } %>
+        </div>
+      </div>
+
+      <div class="stash-divider"></div>
+
+      <!-- Optimal Inventory Section -->
+      <div class="stash-section optimal-section">
+        <div class="stash-section-header">
+          <h2>Optimal Inventory</h2>
+        </div>
+        <% if (results && results.length > 0) { %>
+          <div class="item-grid" id="optimal-grid">
+            <% results.forEach(r => { %>
+              <div class="item-cell rarity-<%= r.item.rarity ? r.item.rarity.toLowerCase() : 'common' %>"
+                   data-category="<%= r.item.category_id %>"
+                   data-name="<%= r.item.name %>"
+                   data-reason="<%= r.reasons.join(', ') %>">
+                <% if (r.item.image_path) { %>
+                  <img src="<%= r.item.image_path %>" alt="<%= r.item.name %>">
+                <% } else { %>
+                  <div style="display:flex;align-items:center;justify-content:center;height:100%;color:#6b7280;font-size:0.7rem;text-align:center;padding:8px;"><%= r.item.name %></div>
+                <% } %>
+                <span class="quantity-badge">x<%= r.stacks %></span>
+              </div>
+            <% }) %>
+          </div>
+        <% } else { %>
+          <div class="stash-empty">
+            <p>Add items above to see the optimal inventory calculation.</p>
+          </div>
+        <% } %>
+      </div>
     </div>
-
-    <button type="button" id="add-item" class="btn btn-secondary">+ Add Item</button>
-
-    <div class="form-actions">
-      <button type="submit" class="btn btn-primary">Calculate Optimal Stash</button>
-    </div>
-  </form>
-
-  <% if (results && results.length > 0) { %>
-    <div class="results-section">
-      <h2>Recommended Stash</h2>
-      <p class="summary">Total stash slots needed: <strong><%= totalSlots %></strong></p>
-
-      <table>
-        <thead>
-          <tr>
-            <th>Item</th>
-            <th>Category</th>
-            <th>Needed</th>
-            <th>Carry (rounded to stack)</th>
-            <th>Stacks</th>
-            <th>Reason</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% results.forEach(r => { %>
-            <tr>
-              <td><a href="/items/<%= r.item.id %>"><%= r.item.name %></a></td>
-              <td><span class="category-badge <%= r.item.category.replace(/ /g, '-') %>"><%= r.item.category %></span></td>
-              <td><%= r.rawQuantity %></td>
-              <td><%= r.roundedQuantity %></td>
-              <td><%= r.stacks %></td>
-              <td><%= r.reasons.join(', ') %></td>
-            </tr>
-          <% }) %>
-        </tbody>
-      </table>
-    </div>
-  <% } else if (results) { %>
-    <div class="results-section">
-      <p>No items selected or all quantities are zero.</p>
-    </div>
-  <% } %>
-
-  <p><a href="/items">&larr; Back to all items</a></p>
+  </div>
 </div>
 
+<!-- Item Selection Modal -->
+<div class="item-modal-overlay" id="item-modal">
+  <div class="item-modal">
+    <div class="item-modal-header">
+      <h3>Select Item</h3>
+      <button class="item-modal-close" onclick="closeItemModal()">&times;</button>
+    </div>
+    <div class="item-modal-search">
+      <input type="text" id="modal-search" placeholder="Search items..." oninput="filterModalItems()">
+    </div>
+    <div class="item-modal-grid">
+      <div class="item-grid" id="modal-items-grid">
+        <!-- Items will be populated by JavaScript -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden form for saving -->
+<form id="stash-form" action="/stash" method="POST" class="stash-form">
+  <div id="form-inputs"></div>
+</form>
+
 <script>
+  // All items data from server
   const allItems = <%- JSON.stringify(allItems) %>;
-  const container = document.getElementById('items-container');
 
-  function createItemRow() {
-    const row = document.createElement('div');
-    row.className = 'loadout-row';
+  // Category mapping for tabs
+  const categoryMapping = {
+    'all': null,
+    'augment': [7],
+    'shield': [9],
+    'weapon': [10],
+    'ammunition': [8],
+    'modification': [11],
+    'quick-use': [5],
+    'key': [6],
+    'material': [1, 2, 3, 4],
+    'misc': [12, 13]
+  };
 
-    const select = document.createElement('select');
-    select.name = 'item_ids';
-    select.required = true;
-    select.innerHTML = '<option value="">Select item</option>' +
-      allItems.map(item =>
-        '<option value="' + item.id + '">' + item.name + ' (' + item.category + ')</option>'
-      ).join('');
+  // Current state
+  let currentCategory = 'all';
+  let desiredItems = {};
 
-    const input = document.createElement('input');
-    input.type = 'number';
-    input.name = 'quantities';
-    input.min = 1;
-    input.value = 1;
-    input.required = true;
-    input.placeholder = 'Stacks';
+  // Initialize from server data
+  <% if (selectedItems && selectedItems.length > 0) { %>
+    <% selectedItems.forEach(s => { %>
+      <% if (s.item) { %>
+        desiredItems[<%= s.item.id %>] = <%= s.stacks %>;
+      <% } %>
+    <% }) %>
+  <% } %>
 
-    const removeBtn = document.createElement('button');
-    removeBtn.type = 'button';
-    removeBtn.className = 'btn btn-danger remove-row';
-    removeBtn.textContent = 'Remove';
+  // Tab switching
+  document.querySelectorAll('.category-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      currentCategory = tab.dataset.category;
+      filterGridsByCategory();
+    });
+  });
 
-    row.appendChild(select);
-    row.appendChild(input);
-    row.appendChild(removeBtn);
-    container.appendChild(row);
+  function filterGridsByCategory() {
+    const categoryIds = categoryMapping[currentCategory];
+
+    // Filter desired items grid (but never hide the add-item cell)
+    document.querySelectorAll('#desired-grid > *').forEach(cell => {
+      if (cell.classList.contains('add-item-cell')) {
+        cell.style.display = ''; // Always show add button
+      } else if (cell.classList.contains('item-cell')) {
+        const itemCategory = parseInt(cell.dataset.category);
+        if (categoryIds === null || categoryIds.includes(itemCategory)) {
+          cell.style.display = '';
+        } else {
+          cell.style.display = 'none';
+        }
+      }
+    });
+
+    // Filter optimal items grid
+    document.querySelectorAll('#optimal-grid .item-cell').forEach(cell => {
+      const itemCategory = parseInt(cell.dataset.category);
+      if (categoryIds === null || categoryIds.includes(itemCategory)) {
+        cell.style.display = '';
+      } else {
+        cell.style.display = 'none';
+      }
+    });
   }
 
-  document.getElementById('add-item').addEventListener('click', createItemRow);
+  // Item modal functions
+  function openItemModal() {
+    const modal = document.getElementById('item-modal');
+    modal.classList.add('active');
+    document.getElementById('modal-search').value = '';
+    populateModalItems();
+    document.getElementById('modal-search').focus();
+  }
 
-  container.addEventListener('click', function(e) {
-    if (e.target.classList.contains('remove-row')) {
-      e.target.parentElement.remove();
+  function closeItemModal() {
+    document.getElementById('item-modal').classList.remove('active');
+  }
+
+  function populateModalItems() {
+    const grid = document.getElementById('modal-items-grid');
+    const categoryIds = categoryMapping[currentCategory];
+    const searchTerm = document.getElementById('modal-search').value.toLowerCase();
+
+    // Filter items by category and search
+    let filteredItems = allItems.filter(item => {
+      const matchesCategory = categoryIds === null || categoryIds.includes(item.category_id);
+      const matchesSearch = item.name.toLowerCase().includes(searchTerm);
+      const notAlreadyAdded = !desiredItems[item.id];
+      return matchesCategory && matchesSearch && notAlreadyAdded;
+    });
+
+    grid.innerHTML = filteredItems.map(item => `
+      <div class="item-cell rarity-${item.rarity ? item.rarity.toLowerCase() : 'common'}"
+           data-name="${item.name}"
+           onclick="selectItem(${item.id})">
+        ${item.image_path
+          ? `<img src="${item.image_path}" alt="${item.name}">`
+          : `<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#6b7280;font-size:0.6rem;text-align:center;padding:4px;">${item.name}</div>`
+        }
+      </div>
+    `).join('');
+  }
+
+  function filterModalItems() {
+    populateModalItems();
+  }
+
+  function selectItem(itemId) {
+    desiredItems[itemId] = 1;
+    closeItemModal();
+    saveAndRefresh();
+  }
+
+  // Quantity adjustment
+  function adjustQuantity(itemId, delta) {
+    event.stopPropagation();
+    const newQty = (desiredItems[itemId] || 0) + delta;
+    if (newQty <= 0) {
+      delete desiredItems[itemId];
+    } else {
+      desiredItems[itemId] = newQty;
+    }
+    saveAndRefresh();
+  }
+
+  // Save and refresh
+  function saveAndRefresh() {
+    const formInputs = document.getElementById('form-inputs');
+    formInputs.innerHTML = '';
+
+    Object.entries(desiredItems).forEach(([itemId, stacks]) => {
+      const idInput = document.createElement('input');
+      idInput.type = 'hidden';
+      idInput.name = 'item_ids';
+      idInput.value = itemId;
+      formInputs.appendChild(idInput);
+
+      const qtyInput = document.createElement('input');
+      qtyInput.type = 'hidden';
+      qtyInput.name = 'quantities';
+      qtyInput.value = stacks;
+      formInputs.appendChild(qtyInput);
+    });
+
+    document.getElementById('stash-form').submit();
+  }
+
+  // Close modal on overlay click
+  document.getElementById('item-modal').addEventListener('click', (e) => {
+    if (e.target.id === 'item-modal') {
+      closeItemModal();
     }
   });
 
-  // Add first row if empty
-  if (container.children.length === 0) {
-    createItemRow();
-  }
+  // Close modal on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeItemModal();
+    }
+  });
+
+  // Tooltip for optimal inventory items
+  const tooltip = document.createElement('div');
+  tooltip.className = 'item-tooltip';
+  tooltip.style.cssText = `
+    position: fixed;
+    background: rgba(0, 0, 0, 0.95);
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    max-width: 280px;
+    text-align: center;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    white-space: normal;
+  `;
+  document.body.appendChild(tooltip);
+
+  document.querySelectorAll('.optimal-section .item-cell').forEach(cell => {
+    cell.addEventListener('mouseenter', (e) => {
+      const name = cell.dataset.name || '';
+      const reason = cell.dataset.reason || '';
+      if (name || reason) {
+        tooltip.textContent = reason ? `${name} — ${reason}` : name;
+        tooltip.style.opacity = '1';
+      }
+    });
+
+    cell.addEventListener('mousemove', (e) => {
+      tooltip.style.left = e.clientX + 'px';
+      tooltip.style.top = (e.clientY - tooltip.offsetHeight - 10) + 'px';
+    });
+
+    cell.addEventListener('mouseleave', () => {
+      tooltip.style.opacity = '0';
+    });
+  });
 </script>
 
 <%- include('../partials/footer') %>

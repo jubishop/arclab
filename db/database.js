@@ -361,6 +361,12 @@ function updateItemCategoryAndRarity(id, categoryId, rarityId) {
   return stmt.run(categoryId, rarityId, id);
 }
 
+// Update item stack size (for scraper)
+function updateItemStackSize(id, stackSize) {
+  const stmt = db.prepare('UPDATE items SET stack_size = ? WHERE id = ?');
+  return stmt.run(stackSize, id);
+}
+
 module.exports = {
   db,
   init,
@@ -379,6 +385,7 @@ module.exports = {
   updateItem,
   updateItemImage,
   updateItemCategoryAndRarity,
+  updateItemStackSize,
   deleteItem,
   deleteRecipesByItemId,
   addRecipeEntry,

@@ -181,6 +181,25 @@ function extractCategory(html) {
 }
 
 /**
+ * Extract stack size from wiki HTML
+ */
+function extractStackSize(html) {
+  // Look for the stack size in the infobox (class is "data-stackstize" - typo in wiki HTML)
+  const stackMatch = html.match(/<tr[^>]*class="data-stackstize[^"]*"[^>]*>[\s\S]*?<td>(\d+)<\/td>/i);
+  if (stackMatch) {
+    return parseInt(stackMatch[1], 10);
+  }
+
+  // Fallback: look for "Stack Size" label
+  const labelMatch = html.match(/Stack\s*Size[\s\S]*?<td>(\d+)<\/td>/i);
+  if (labelMatch) {
+    return parseInt(labelMatch[1], 10);
+  }
+
+  return null;
+}
+
+/**
  * Extract rarity from wiki HTML
  */
 function extractRarity(html) {
@@ -218,11 +237,12 @@ async function processItem(item) {
     // Fetch wiki page
     const html = await fetch(wikiUrl);
 
-    // Extract category and rarity
+    // Extract category, rarity, and stack size
     const categoryId = extractCategory(html);
     const rarityId = extractRarity(html);
+    const stackSize = extractStackSize(html);
 
-    if (!categoryId && !rarityId) {
+    if (!categoryId && !rarityId && !stackSize) {
       warnings.push(`No metadata found for: ${item.name}`);
       failed++;
       return;
@@ -234,9 +254,15 @@ async function processItem(item) {
 
     db.updateItemCategoryAndRarity(item.id, newCategoryId, newRarityId);
 
+    // Update stack size if found and different from current
+    if (stackSize && stackSize !== item.stack_size) {
+      db.updateItemStackSize(item.id, stackSize);
+    }
+
     const categoryName = db.CategoryNames[newCategoryId] || 'Unknown';
     const rarityName = db.RarityNames[newRarityId] || 'Unknown';
-    console.log(`  [OK] ${item.name} -> ${categoryName} / ${rarityName}`);
+    const stackInfo = stackSize ? ` (stack: ${stackSize})` : '';
+    console.log(`  [OK] ${item.name} -> ${categoryName} / ${rarityName}${stackInfo}`);
     success++;
 
   } catch (err) {
