@@ -1,10 +1,5 @@
-<svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="12" cy="4" r="2.5"></circle>
-  <circle cx="4" cy="12" r="2.5"></circle>
-  <circle cx="20" cy="12" r="2.5"></circle>
-  <circle cx="12" cy="20" r="2.5"></circle>
-  <line x1="9.5" y1="6.5" x2="6.5" y2="9.5"></line>
-  <line x1="14.5" y1="6.5" x2="17.5" y2="9.5"></line>
-  <line x1="6.5" y1="14.5" x2="9.5" y2="17.5"></line>
-  <line x1="17.5" y1="14.5" x2="14.5" y2="17.5"></line>
+<svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.5" xmlns="http://www.w3.org/2000/svg">
+  <!-- Two circles connected horizontally - like chain links -->
+  <circle cx="8" cy="12" r="5"></circle>
+  <circle cx="16" cy="12" r="5"></circle>
 </svg>

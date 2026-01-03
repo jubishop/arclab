@@ -32,7 +32,7 @@ function calculateOptimalInventory(desiredItems) {
 
     if (!recipe || recipe.length === 0) {
       // Not craftable, just hold the item itself
-      addToInventory(inventory, item, quantity, `${stacks} ${stackWord} base item`);
+      addToInventory(inventory, item, quantity, '');
       continue;
     }
 
@@ -44,13 +44,13 @@ function calculateOptimalInventory(desiredItems) {
 
     if (slotsPerCraftedItem < slotsForMaterials) {
       // Crafted item is more efficient, hold the item
-      addToInventory(inventory, item, quantity, `${stacks} ${stackWord} craft ahead`);
+      addToInventory(inventory, item, quantity, '');
     } else {
       // Materials are more efficient (or equal), hold the materials
       for (const r of recipe) {
         const material = db.getItemById(r.material_id);
         const materialQty = r.quantity * quantity;
-        addToInventory(inventory, material, materialQty, `for ${stacks} ${stackWord} ${item.name}`);
+        addToInventory(inventory, material, materialQty, item.name);
       }
     }
   }
@@ -83,7 +83,7 @@ function addToInventory(inventory, item, quantity, reason) {
     };
   }
   inventory[item.id].quantity += quantity;
-  if (!inventory[item.id].reasons.includes(reason)) {
+  if (reason && !inventory[item.id].reasons.includes(reason)) {
     inventory[item.id].reasons.push(reason);
   }
 }

@@ -1,6 +1,5 @@
-<svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
-  <rect x="5" y="6" width="5" height="12" rx="2"></rect>
-  <rect x="14" y="6" width="5" height="12" rx="2"></rect>
-  <line x1="7.5" y1="6" x2="7.5" y2="3"></line>
-  <line x1="16.5" y1="6" x2="16.5" y2="3"></line>
+<svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.5" xmlns="http://www.w3.org/2000/svg">
+  <!-- Two simple vertical bullet shapes -->
+  <rect x="6" y="4" width="4" height="16" rx="2"></rect>
+  <rect x="14" y="4" width="4" height="16" rx="2"></rect>
 </svg>

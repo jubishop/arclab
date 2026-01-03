@@ -1015,3 +1015,12 @@ select:focus {
     grid-template-columns: repeat(4, 1fr);
   }
 }
+
+/* Hide fiddly controls and tooltips on touch devices */
+@media (pointer: coarse) {
+  .item-cell .quantity-controls,
+  .item-cell .btn-remove,
+  .item-tooltip {
+    display: none !important;
+  }
+}

@@ -96,19 +96,20 @@
         <% if (results && results.length > 0) { %>
           <div class="item-grid" id="optimal-grid">
             <% results.forEach(r => { %>
-              <div class="item-cell rarity-<%= r.item.rarity ? r.item.rarity.toLowerCase() : 'common' %>"
-                   data-category="<%= r.item.category_id %>"
-                   data-name="<%= r.item.name %>"
-                   data-reason="<%= r.reasons.join(', ') %>"
-                   onclick="goToItem(<%= r.item.id %>)"
-                   style="cursor: pointer;">
-                <% if (r.item.image_path) { %>
-                  <img src="<%= r.item.image_path %>" alt="<%= r.item.name %>">
-                <% } else { %>
-                  <div style="display:flex;align-items:center;justify-content:center;height:100%;color:#6b7280;font-size:0.7rem;text-align:center;padding:8px;"><%= r.item.name %></div>
-                <% } %>
-                <span class="quantity-badge">x<%= r.stacks %></span>
-              </div>
+              <% for (let i = 0; i < r.stacks; i++) { %>
+                <div class="item-cell rarity-<%= r.item.rarity ? r.item.rarity.toLowerCase() : 'common' %>"
+                     data-category="<%= r.item.category_id %>"
+                     data-name="<%= r.item.name %>"
+                     data-reason="<%= r.reasons.join(', ') %>"
+                     onclick="goToItem(<%= r.item.id %>)"
+                     style="cursor: pointer;">
+                  <% if (r.item.image_path) { %>
+                    <img src="<%= r.item.image_path %>" alt="<%= r.item.name %>">
+                  <% } else { %>
+                    <div style="display:flex;align-items:center;justify-content:center;height:100%;color:#6b7280;font-size:0.7rem;text-align:center;padding:8px;"><%= r.item.name %></div>
+                  <% } %>
+                </div>
+              <% } %>
             <% }) %>
           </div>
         <% } else { %>
@@ -354,12 +355,26 @@
   `;
   document.body.appendChild(tooltip);
 
+  function formatList(items) {
+    if (items.length === 0) return '';
+    if (items.length === 1) return items[0];
+    if (items.length === 2) return `${items[0]} and ${items[1]}`;
+    return items.slice(0, -1).join(', ') + ', and ' + items[items.length - 1];
+  }
+
   function attachTooltip(cell) {
     cell.addEventListener('mouseenter', (e) => {
       const name = cell.dataset.name || '';
       const reason = cell.dataset.reason || '';
-      if (name || reason) {
-        tooltip.textContent = reason ? `${name} — ${reason}` : name;
+      let tooltipText = name;
+      if (reason) {
+        const items = reason.split(', ').filter(s => s);
+        if (items.length > 0) {
+          tooltipText = `${name} — for ${formatList(items)}`;
+        }
+      }
+      if (tooltipText) {
+        tooltip.textContent = tooltipText;
         tooltip.style.opacity = '1';
       }
     });
