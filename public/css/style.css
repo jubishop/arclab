@@ -418,11 +418,60 @@ select:focus {
   margin-bottom: 1rem;
 }
 
-#item-filter {
+#item-filter,
+#gun-filter,
+#filter {
   width: 100%;
   max-width: 400px;
   padding: 0.75rem 1rem;
   font-size: 1rem;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #0f3460;
+}
+
+.tab {
+  padding: 0.75rem 1.5rem;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  color: #888;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab:hover {
+  color: #ccc;
+}
+
+.tab.active {
+  color: #fff;
+  border-bottom-color: #4fc3f7;
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* Item thumbnail in tables */
+.item-thumbnail {
+  width: 32px;
+  height: 32px;
+  vertical-align: middle;
+  margin-right: 0.5rem;
+  border-radius: 4px;
 }
 
 /* ==========================================

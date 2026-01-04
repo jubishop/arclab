@@ -9,6 +9,7 @@ const db = new Database(dbPath);
 db.pragma('foreign_keys = ON');
 
 // Category enum - IDs stored directly on items
+// Note: WEAPON (10) was removed - guns now have their own table
 const Category = Object.freeze({
   BASIC_MATERIAL: 1,
   TOPSIDE_MATERIAL: 2,
@@ -19,7 +20,6 @@ const Category = Object.freeze({
   AUGMENT: 7,
   AMMUNITION: 8,
   SHIELD: 9,
-  WEAPON: 10,
   MODIFICATION: 11,
   TRINKET: 12,
   MISC: 13,
@@ -38,7 +38,6 @@ const CategoryNames = Object.freeze({
   [Category.AUGMENT]: 'Augment',
   [Category.AMMUNITION]: 'Ammunition',
   [Category.SHIELD]: 'Shield',
-  [Category.WEAPON]: 'Weapon',
   [Category.MODIFICATION]: 'Modification',
   [Category.TRINKET]: 'Trinket',
   [Category.MISC]: 'Misc',
@@ -371,6 +370,117 @@ function updateItemStackSize(id, stackSize) {
   return stmt.run(stackSize, id);
 }
 
+// === GUN FUNCTIONS ===
+
+// Get all guns with their level counts
+function getAllGuns() {
+  return db.prepare(`
+    SELECT g.*,
+           COUNT(gl.id) as level_count
+    FROM guns g
+    LEFT JOIN gun_levels gl ON g.id = gl.gun_id
+    GROUP BY g.id
+    ORDER BY g.name
+  `).all().map(gun => ({
+    ...gun,
+    rarity: RarityNames[gun.rarity_id] || null,
+    is_upgradeable: gun.level_count > 1
+  }));
+}
+
+// Get a single gun by ID with all its levels
+function getGunById(id) {
+  const gun = db.prepare(`
+    SELECT g.*, COUNT(gl.id) as level_count
+    FROM guns g
+    LEFT JOIN gun_levels gl ON g.id = gl.gun_id
+    WHERE g.id = ?
+    GROUP BY g.id
+  `).get(id);
+  if (!gun) return null;
+
+  gun.rarity = RarityNames[gun.rarity_id] || null;
+  gun.is_upgradeable = gun.level_count > 1;
+  gun.levels = getGunLevels(id);
+  return gun;
+}
+
+// Get a gun by name
+function getGunByName(name) {
+  const gun = db.prepare(`
+    SELECT g.*, COUNT(gl.id) as level_count
+    FROM guns g
+    LEFT JOIN gun_levels gl ON g.id = gl.gun_id
+    WHERE g.name = ?
+    GROUP BY g.id
+  `).get(name);
+  if (!gun) return null;
+
+  gun.rarity = RarityNames[gun.rarity_id] || null;
+  gun.is_upgradeable = gun.level_count > 1;
+  gun.levels = getGunLevels(gun.id);
+  return gun;
+}
+
+// Get all levels for a gun
+function getGunLevels(gunId) {
+  return db.prepare(`
+    SELECT * FROM gun_levels
+    WHERE gun_id = ?
+    ORDER BY level
+  `).all(gunId);
+}
+
+// Get recipe for a specific gun level
+// Returns item materials; previous level requirement is inferred (level N requires level N-1)
+function getGunLevelRecipe(gunId, level) {
+  const gunLevel = db.prepare(`
+    SELECT id FROM gun_levels WHERE gun_id = ? AND level = ?
+  `).get(gunId, level);
+
+  if (!gunLevel) return null;
+
+  // Get item materials from gun_level_recipes
+  return db.prepare(`
+    SELECT glr.*,
+           i.name as material_name,
+           i.stack_size as material_stack_size,
+           i.category_id as material_category_id,
+           i.image_path as material_image_path
+    FROM gun_level_recipes glr
+    JOIN items i ON glr.material_item_id = i.id
+    WHERE glr.gun_level_id = ?
+  `).all(gunLevel.id).map(r => ({
+    ...r,
+    material_category: CategoryNames[r.material_category_id] || 'Unknown'
+  }));
+}
+
+// Create a new gun
+function createGun(name, rarityId, imagePath = null) {
+  const stmt = db.prepare(`
+    INSERT INTO guns (name, rarity_id, image_path)
+    VALUES (?, ?, ?)
+  `);
+  const result = stmt.run(name, rarityId, imagePath);
+  return result.lastInsertRowid;
+}
+
+// Add a level to a gun
+function addGunLevel(gunId, level, itemId = null) {
+  const stmt = db.prepare(`
+    INSERT INTO gun_levels (gun_id, level, item_id)
+    VALUES (?, ?, ?)
+  `);
+  return stmt.run(gunId, level, itemId);
+}
+
+// Update gun image
+function updateGunImage(id, imagePath) {
+  const stmt = db.prepare('UPDATE guns SET image_path = ? WHERE id = ?');
+  return stmt.run(imagePath, id);
+}
+
 module.exports = {
   db,
   init,
@@ -397,5 +507,14 @@ module.exports = {
   getStash,
   saveStash,
   getCategoryId,
-  getRarityId
+  getRarityId,
+  // Gun functions
+  getAllGuns,
+  getGunById,
+  getGunByName,
+  getGunLevels,
+  getGunLevelRecipe,
+  createGun,
+  addGunLevel,
+  updateGunImage
 };

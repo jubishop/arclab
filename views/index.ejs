@@ -1,0 +1,142 @@
+<%- include('partials/header') %>
+
+<div class="container">
+  <div class="tabs">
+    <button class="tab active" data-tab="items">Items</button>
+    <button class="tab" data-tab="guns">Guns</button>
+  </div>
+
+  <div class="filter-container">
+    <input type="text" id="filter" placeholder="Filter..." autofocus>
+  </div>
+
+  <!-- Items Tab -->
+  <div id="items-tab" class="tab-content active">
+    <% if (items.length === 0) { %>
+      <p class="empty-state">No items yet. <a href="/items/new">Add your first item</a>.</p>
+    <% } else { %>
+      <table id="items-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Stack Size</th>
+            <th>Craftable</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% items.forEach(item => { %>
+            <tr>
+              <td>
+                <a href="/items/<%= item.id %>">
+                  <% if (item.image_path) { %>
+                    <img src="<%= item.image_path %>" alt="<%= item.name %>" class="item-thumbnail">
+                  <% } %>
+                  <%= item.name %>
+                </a>
+              </td>
+              <td><span class="category-badge <%= item.category.replace(/ /g, '-') %>"><%= item.category %></span></td>
+              <td><%= item.stack_size %></td>
+              <td><%= item.is_craftable ? 'Yes' : 'No' %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+  </div>
+
+  <!-- Guns Tab -->
+  <div id="guns-tab" class="tab-content">
+    <% if (guns.length === 0) { %>
+      <p class="empty-state">No guns in database.</p>
+    <% } else { %>
+      <table id="guns-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Rarity</th>
+            <th>Levels</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% guns.forEach(gun => { %>
+            <tr>
+              <td>
+                <a href="/guns/<%= gun.id %>" class="gun-link">
+                  <% if (gun.image_path) { %>
+                    <img src="<%= gun.image_path %>" alt="<%= gun.name %>" class="item-thumbnail">
+                  <% } %>
+                  <%= gun.name %>
+                </a>
+              </td>
+              <td><span class="rarity-badge rarity-<%= gun.rarity ? gun.rarity.toLowerCase() : 'common' %>"><%= gun.rarity || 'Unknown' %></span></td>
+              <td><%= gun.level_count %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+  </div>
+
+  <p id="no-results" class="empty-state" style="display: none;">No results match your filter.</p>
+</div>
+
+<script>
+  // Tab switching
+  const tabs = document.querySelectorAll('.tab');
+  const tabContents = document.querySelectorAll('.tab-content');
+  const filterInput = document.getElementById('filter');
+  const noResults = document.getElementById('no-results');
+  let visibleRows = [];
+  let activeTab = localStorage.getItem('activeTab') || 'items';
+
+  function matchesFilter(text, terms) {
+    return terms.every(term => text.includes(term));
+  }
+
+  function applyFilter() {
+    const terms = filterInput.value.toLowerCase().split(/\s+/).filter(t => t);
+    const table = document.getElementById(activeTab + '-table');
+    if (!table) return;
+
+    const rows = table.querySelectorAll('tbody tr');
+    visibleRows = [];
+
+    rows.forEach(row => {
+      const name = row.cells[0].textContent.toLowerCase();
+      const matches = terms.length === 0 || matchesFilter(name, terms);
+      row.style.display = matches ? '' : 'none';
+      if (matches) visibleRows.push(row);
+    });
+
+    noResults.style.display = visibleRows.length === 0 && terms.length > 0 ? '' : 'none';
+    table.style.display = visibleRows.length === 0 && terms.length > 0 ? 'none' : '';
+  }
+
+  function switchTab(tabName) {
+    tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === tabName));
+    tabContents.forEach(tc => tc.classList.toggle('active', tc.id === tabName + '-tab'));
+    activeTab = tabName;
+    localStorage.setItem('activeTab', tabName);
+    filterInput.placeholder = tabName === 'items' ? 'Filter items...' : 'Filter guns...';
+    applyFilter();
+  }
+
+  // Initialize
+  switchTab(activeTab);
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+  });
+
+  filterInput.addEventListener('input', applyFilter);
+
+  filterInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && visibleRows.length === 1) {
+      const link = visibleRows[0].querySelector('a');
+      if (link) window.location.href = link.href;
+    }
+  });
+</script>
+
+<%- include('partials/footer') %>

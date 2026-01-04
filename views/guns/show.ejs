@@ -1,0 +1,102 @@
+<%- include('../partials/header') %>
+
+<%
+  const levelNames = ['', 'I', 'II', 'III', 'IV'];
+%>
+
+<div class="container">
+  <div class="item-header">
+    <h1><%= gun.name %></h1>
+  </div>
+
+  <div class="item-details">
+    <% if (gun.image_path) { %>
+      <div class="item-image">
+        <img src="<%= gun.image_path %>" alt="<%= gun.name %>">
+      </div>
+    <% } %>
+    <div class="item-info">
+      <% if (gun.rarity) { %>
+        <p><strong>Rarity:</strong> <span class="rarity-badge rarity-<%= gun.rarity.toLowerCase() %>"><%= gun.rarity %></span></p>
+      <% } %>
+      <p><strong>Upgrade Levels:</strong> <%= gun.level_count %></p>
+    </div>
+  </div>
+
+  <div class="gun-levels-section">
+    <h2>Upgrade Levels</h2>
+
+    <% gun.levels.forEach(level => { %>
+      <div class="gun-level">
+        <h3><%= gun.name %> <%= levelNames[level.level] %></h3>
+
+        <% if (level.level > 1) { %>
+          <p class="upgrade-requires">
+            Requires: <strong><%= gun.name %> <%= levelNames[level.level - 1] %></strong>
+          </p>
+        <% } %>
+
+        <% const recipe = levelRecipes[level.level]; %>
+        <% if (recipe && recipe.length > 0) { %>
+          <table class="recipe-table">
+            <thead>
+              <tr>
+                <th>Material</th>
+                <th>Quantity</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% recipe.forEach(r => { %>
+                <tr>
+                  <td><a href="/items/<%= r.material_item_id %>"><%= r.material_name %></a></td>
+                  <td><%= r.quantity %></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        <% } else { %>
+          <p class="no-materials">No additional materials required.</p>
+        <% } %>
+      </div>
+    <% }) %>
+  </div>
+
+  <p><a href="/">&larr; Back to all guns</a></p>
+</div>
+
+<style>
+  .gun-levels-section {
+    margin-top: 2rem;
+  }
+
+  .gun-level {
+    background: var(--bg-secondary, #1a1a2e);
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .gun-level h3 {
+    margin: 0 0 0.5rem 0;
+    color: var(--text-primary, #fff);
+  }
+
+  .upgrade-requires {
+    color: var(--text-secondary, #aaa);
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .recipe-table {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+
+  .no-materials {
+    color: var(--text-secondary, #888);
+    font-style: italic;
+    margin: 0.5rem 0;
+  }
+</style>
+
+<%- include('../partials/footer') %>

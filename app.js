@@ -3,6 +3,7 @@ const path = require('path');
 const db = require('./db/database');
 const itemsRouter = require('./routes/items');
 const stashRouter = require('./routes/stash');
+const gunsRouter = require('./routes/guns');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -17,11 +18,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Routes
 app.get('/', (req, res) => {
-  res.redirect('/items');
+  const items = db.getAllItems();
+  const guns = db.getAllGuns();
+  res.render('index', { items, guns });
 });
 
 app.use('/items', itemsRouter);
 app.use('/stash', stashRouter);
+app.use('/guns', gunsRouter);
 
 // Initialize database and start server
 db.init();

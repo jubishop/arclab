@@ -19,10 +19,13 @@ This is an ARC Raiders item tracking web application built with Node.js, Express
 
 ## Database Schema
 
-Three tables:
+Six tables:
 - `items` - id, name, stack_size, category_id, rarity_id, image_path, created_at
 - `recipes` - id, item_id, material_id, quantity
 - `stash_items` - id, item_id, quantity (saved stash configuration)
+- `guns` - id, name, rarity_id, image_path, created_at
+- `gun_levels` - id, gun_id, level
+- `gun_level_recipes` - id, gun_level_id, material_item_id, quantity
 
 Categories and rarities are stored as integer enums (no FK tables):
 
@@ -36,12 +39,13 @@ Categories and rarities are stored as integer enums (no FK tables):
 7. Augment
 8. Ammunition
 9. Shield
-10. Weapon
 11. Modification
 12. Trinket
 13. Misc
 14. Recyclable
 15. Nature
+
+Note: Category 10 (Weapon) was removed - guns now have their own tables.
 
 **Rarities (rarity_id):**
 1. Common
@@ -49,6 +53,12 @@ Categories and rarities are stored as integer enums (no FK tables):
 3. Rare
 4. Epic
 5. Legendary
+
+**Guns:**
+- Each gun is a single entity with upgrade levels (I, II, III, IV)
+- Number of levels is determined by entries in `gun_levels` table (not hardcoded)
+- Level 2+ upgrades require the previous level of the same gun (inferred, not stored)
+- Recipes for each level are accessed via `db.getGunLevelRecipe(gunId, level)`
 
 ## Common Tasks
 
@@ -66,6 +76,21 @@ db.saveRecipe(itemId, [
   { materialId: 1, quantity: 5 },
   { materialId: 2, quantity: 3 }
 ]);
+```
+
+### Working with guns
+```javascript
+const db = require('./db/database');
+
+// Get all guns
+const guns = db.getAllGuns();
+
+// Get a specific gun with all levels
+const gun = db.getGunByName('Arpeggio');
+// gun.levels = [{ level: 1, item_id: 113 }, { level: 2, item_id: 114 }, ...]
+
+// Get recipe for a specific gun level
+const recipe = db.getGunLevelRecipe(gun.id, 2); // Level II recipe
 ```
 
 ### Running the app
@@ -120,6 +145,7 @@ Item data from https://arcraiders.wiki/
 ### Scraping scripts
 - `scripts/scrape-images.js` - Downloads item images from the wiki
 - `scripts/scrape-metadata.js` - Scrapes category and rarity for all items
+- `scripts/migrate-guns.js` - Migrates weapon items to guns/gun_levels tables
 
 Run with `--force` to re-scrape items that already have data:
 ```bash

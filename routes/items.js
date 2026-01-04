@@ -3,12 +3,6 @@ const router = express.Router();
 const db = require('../db/database');
 const { calculateInventoryEfficiency } = require('../lib/inventory');
 
-// List all items
-router.get('/', (req, res) => {
-  const items = db.getAllItems();
-  res.render('items/index', { items, categories: db.CATEGORIES });
-});
-
 // New item form
 router.get('/new', (req, res) => {
   const craftingMaterials = db.getCraftingMaterials();
