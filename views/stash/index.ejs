@@ -62,7 +62,7 @@
                      data-stacks="<%= s.stacks %>"
                      data-category="<%= s.item.category_id %>"
                      data-name="<%= s.item.name %>"
-                     onclick="goToItem(<%= s.item.id %>)"
+                     onclick="handleDesiredItemClick(<%= s.item.id %>)"
                      style="cursor: pointer;">
                   <div class="quantity-controls">
                     <button class="btn-minus" onclick="adjustQuantity(<%= s.item.id %>, -1)">-</button>
@@ -117,6 +117,31 @@
             <p>Add items above to see the optimal inventory calculation.</p>
           </div>
         <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Item Modal (for touch devices) -->
+<div class="item-modal-overlay" id="edit-modal">
+  <div class="item-modal edit-item-modal">
+    <div class="item-modal-header">
+      <h3 id="edit-modal-title">Edit Item</h3>
+      <button class="item-modal-close" onclick="closeEditModal()">&times;</button>
+    </div>
+    <div class="edit-modal-content">
+      <div class="edit-modal-item">
+        <div class="edit-modal-image" id="edit-modal-image"></div>
+        <div class="edit-modal-name" id="edit-modal-name"></div>
+      </div>
+      <div class="edit-modal-quantity">
+        <button class="edit-qty-btn" id="edit-btn-minus" onclick="editModalAdjust(-1)">−</button>
+        <span class="edit-qty-value" id="edit-modal-qty">1</span>
+        <button class="edit-qty-btn" id="edit-btn-plus" onclick="editModalAdjust(1)">+</button>
+      </div>
+      <div class="edit-modal-actions">
+        <button class="btn btn-danger edit-remove-btn" onclick="editModalRemove()">Remove Item</button>
+        <a class="btn btn-secondary edit-details-btn" id="edit-modal-details-link" href="#">View Details</a>
       </div>
     </div>
   </div>
@@ -294,9 +319,84 @@
     saveAndRefresh();
   }
 
+  // Detect touch device
+  const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
+
   // Navigate to item details page
   function goToItem(itemId) {
     window.location.href = '/items/' + itemId;
+  }
+
+  // Handle desired item click - touch devices open edit modal, others navigate
+  function handleDesiredItemClick(itemId) {
+    if (isTouchDevice) {
+      openEditModal(itemId);
+    } else {
+      goToItem(itemId);
+    }
+  }
+
+  // Edit modal state
+  let editingItemId = null;
+
+  function openEditModal(itemId) {
+    editingItemId = itemId;
+    const item = allItems.find(i => i.id === itemId);
+    if (!item) return;
+
+    const modal = document.getElementById('edit-modal');
+    const imageContainer = document.getElementById('edit-modal-image');
+    const nameEl = document.getElementById('edit-modal-name');
+    const qtyEl = document.getElementById('edit-modal-qty');
+    const detailsLink = document.getElementById('edit-modal-details-link');
+
+    // Set rarity class on image container
+    imageContainer.className = 'edit-modal-image';
+    if (item.rarity) {
+      imageContainer.classList.add('rarity-' + item.rarity.toLowerCase());
+    }
+
+    // Set image
+    if (item.image_path) {
+      imageContainer.innerHTML = `<img src="${item.image_path}" alt="${item.name}">`;
+    } else {
+      imageContainer.innerHTML = `<span style="color:#6b7280;font-size:0.8rem;text-align:center;padding:8px;">${item.name}</span>`;
+    }
+
+    // Set name and quantity
+    nameEl.textContent = item.name;
+    qtyEl.textContent = desiredItems[itemId] || 1;
+
+    // Set details link
+    detailsLink.href = '/items/' + itemId;
+
+    modal.classList.add('active');
+  }
+
+  function closeEditModal() {
+    document.getElementById('edit-modal').classList.remove('active');
+    editingItemId = null;
+  }
+
+  function editModalAdjust(delta) {
+    if (!editingItemId) return;
+    const newQty = (desiredItems[editingItemId] || 0) + delta;
+    if (newQty <= 0) {
+      delete desiredItems[editingItemId];
+      closeEditModal();
+      saveAndRefresh();
+    } else {
+      desiredItems[editingItemId] = newQty;
+      document.getElementById('edit-modal-qty').textContent = newQty;
+      saveAndRefresh();
+    }
+  }
+
+  function editModalRemove() {
+    if (!editingItemId) return;
+    delete desiredItems[editingItemId];
+    closeEditModal();
+    saveAndRefresh();
   }
 
   // Save and refresh
@@ -321,17 +421,24 @@
     document.getElementById('stash-form').submit();
   }
 
-  // Close modal on overlay click
+  // Close modals on overlay click
   document.getElementById('item-modal').addEventListener('click', (e) => {
     if (e.target.id === 'item-modal') {
       closeItemModal();
     }
   });
 
-  // Close modal on Escape key
+  document.getElementById('edit-modal').addEventListener('click', (e) => {
+    if (e.target.id === 'edit-modal') {
+      closeEditModal();
+    }
+  });
+
+  // Close modals on Escape key
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       closeItemModal();
+      closeEditModal();
     }
   });
 
