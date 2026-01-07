@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node app.js",
+    "start:bg": "nohup node app.js > arclab.log 2>&1 & echo $! > .pid && echo 'Server started (PID:' $(cat .pid) ')'",
+    "stop": "kill $(lsof -t -i :3000) 2>/dev/null || echo 'No server running on port 3000'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
