@@ -133,6 +133,25 @@ router.get('/', (req, res) => {
   });
 });
 
+// Save stash via JSON (no page render) - for async updates
+router.post('/save', (req, res) => {
+  const { items } = req.body; // Array of { itemId, stacks }
+
+  if (!items || !Array.isArray(items)) {
+    return res.status(400).json({ error: 'Invalid items array' });
+  }
+
+  const desiredItems = items
+    .map(d => ({
+      itemId: parseInt(d.itemId),
+      quantity: parseInt(d.stacks) || 0
+    }))
+    .filter(d => d.itemId && d.quantity > 0);
+
+  db.saveStash(desiredItems);
+  res.json({ success: true });
+});
+
 // Calculate stash and save configuration
 router.post('/', (req, res) => {
   const { item_ids, quantities, active_category } = req.body;

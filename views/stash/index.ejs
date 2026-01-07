@@ -338,9 +338,11 @@
 
   // Edit modal state
   let editingItemId = null;
+  let editModalDirty = false;
 
   function openEditModal(itemId) {
     editingItemId = itemId;
+    editModalDirty = false;
     const item = allItems.find(i => i.id === itemId);
     if (!item) return;
 
@@ -376,6 +378,10 @@
   function closeEditModal() {
     document.getElementById('edit-modal').classList.remove('active');
     editingItemId = null;
+    if (editModalDirty) {
+      editModalDirty = false;
+      saveAndRefresh();
+    }
   }
 
   function editModalAdjust(delta) {
@@ -383,20 +389,36 @@
     const newQty = (desiredItems[editingItemId] || 0) + delta;
     if (newQty <= 0) {
       delete desiredItems[editingItemId];
+      editModalDirty = true;
+      saveAsync();
       closeEditModal();
-      saveAndRefresh();
     } else {
       desiredItems[editingItemId] = newQty;
       document.getElementById('edit-modal-qty').textContent = newQty;
-      saveAndRefresh();
+      editModalDirty = true;
+      saveAsync();
     }
+  }
+
+  // Save to server without page refresh
+  function saveAsync() {
+    const items = Object.entries(desiredItems).map(([itemId, stacks]) => ({
+      itemId: parseInt(itemId),
+      stacks: stacks
+    }));
+    fetch('/stash/save', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ items })
+    });
   }
 
   function editModalRemove() {
     if (!editingItemId) return;
     delete desiredItems[editingItemId];
+    editModalDirty = true;
+    saveAsync();
     closeEditModal();
-    saveAndRefresh();
   }
 
   // Save and refresh
