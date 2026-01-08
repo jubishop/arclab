@@ -99,9 +99,10 @@
               <% for (let i = 0; i < r.stacks; i++) { %>
                 <div class="item-cell rarity-<%= r.item.rarity ? r.item.rarity.toLowerCase() : 'common' %>"
                      data-category="<%= r.item.category_id %>"
+                     data-item-id="<%= r.item.id %>"
                      data-name="<%= r.item.name %>"
                      data-reason="<%= r.reasons.join(', ') %>"
-                     onclick="goToItem(<%= r.item.id %>)"
+                     onclick="handleOptimalItemClick(this)"
                      style="cursor: pointer;">
                   <% if (r.item.image_path) { %>
                     <img src="<%= r.item.image_path %>" alt="<%= r.item.name %>">
@@ -117,6 +118,26 @@
             <p>Add items above to see the optimal inventory calculation.</p>
           </div>
         <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Item Info Modal (for touch devices - optimal inventory) -->
+<div class="item-modal-overlay" id="info-modal">
+  <div class="item-modal edit-item-modal">
+    <div class="item-modal-header">
+      <h3 id="info-modal-title">Item Info</h3>
+      <button class="item-modal-close" onclick="closeInfoModal()">&times;</button>
+    </div>
+    <div class="edit-modal-content">
+      <div class="edit-modal-item">
+        <div class="edit-modal-image" id="info-modal-image"></div>
+        <div class="edit-modal-name" id="info-modal-name"></div>
+      </div>
+      <div class="info-modal-reason" id="info-modal-reason"></div>
+      <div class="edit-modal-actions">
+        <a class="btn btn-secondary edit-details-btn" id="info-modal-details-link" href="#">View Details</a>
       </div>
     </div>
   </div>
@@ -327,6 +348,68 @@
     window.location.href = '/items/' + itemId;
   }
 
+  // Handle optimal item click - touch devices open info modal, others navigate
+  function handleOptimalItemClick(cell) {
+    const itemId = parseInt(cell.dataset.itemId);
+    if (isTouchDevice) {
+      openInfoModal(cell);
+    } else {
+      goToItem(itemId);
+    }
+  }
+
+  // Info modal for optimal inventory items
+  function openInfoModal(cell) {
+    const itemId = parseInt(cell.dataset.itemId);
+    const item = allItems.find(i => i.id === itemId);
+    if (!item) return;
+
+    const modal = document.getElementById('info-modal');
+    const imageContainer = document.getElementById('info-modal-image');
+    const nameEl = document.getElementById('info-modal-name');
+    const reasonEl = document.getElementById('info-modal-reason');
+    const detailsLink = document.getElementById('info-modal-details-link');
+
+    // Set rarity class on image container
+    imageContainer.className = 'edit-modal-image';
+    if (item.rarity) {
+      imageContainer.classList.add('rarity-' + item.rarity.toLowerCase());
+    }
+
+    // Set image
+    if (item.image_path) {
+      imageContainer.innerHTML = `<img src="${item.image_path}" alt="${item.name}">`;
+    } else {
+      imageContainer.innerHTML = `<span style="color:#6b7280;font-size:0.8rem;text-align:center;padding:8px;">${item.name}</span>`;
+    }
+
+    // Set name
+    nameEl.textContent = item.name;
+
+    // Set reason
+    const reason = cell.dataset.reason || '';
+    if (reason) {
+      const items = reason.split(', ').filter(s => s);
+      if (items.length > 0) {
+        reasonEl.textContent = `For ${formatList(items)}`;
+        reasonEl.style.display = '';
+      } else {
+        reasonEl.style.display = 'none';
+      }
+    } else {
+      reasonEl.style.display = 'none';
+    }
+
+    // Set details link
+    detailsLink.href = '/items/' + itemId;
+
+    modal.classList.add('active');
+  }
+
+  function closeInfoModal() {
+    document.getElementById('info-modal').classList.remove('active');
+  }
+
   // Handle desired item click - touch devices open edit modal, others navigate
   function handleDesiredItemClick(itemId) {
     if (isTouchDevice) {
@@ -456,11 +539,18 @@
     }
   });
 
+  document.getElementById('info-modal').addEventListener('click', (e) => {
+    if (e.target.id === 'info-modal') {
+      closeInfoModal();
+    }
+  });
+
   // Close modals on Escape key
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       closeItemModal();
       closeEditModal();
+      closeInfoModal();
     }
   });
 
